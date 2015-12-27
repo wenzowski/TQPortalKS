@@ -120,7 +120,7 @@ var HttpClient = function() {
             console.log('HEADERS: ' + JSON.stringify(response.headers));
             response.setEncoding('utf8');
             response.on('data', function (chunk) {
-                result = cleanJSON(chunk);
+                result = JSON.parse(chunk);
                 console.log("CARGO "+result.cargo);
                 console.log('BODY: ' + JSON.stringify(result));
 ///////////////////////////////////
