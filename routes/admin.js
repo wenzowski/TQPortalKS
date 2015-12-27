@@ -1,0 +1,360 @@
+/**
+ * Created by park on 11/17/2015.
+ */
+var Constants = require('../apps/constants');
+
+exports.plugin = function(app, environment) {
+    var self = this,
+        isPrivatePortal = environment.getIsPrivatePortal(),
+        AdminModel = environment.getAdminModel();
+    console.log("Admin "+AdminModel);
+
+    ////////////////////////////////
+    // TODO
+    //  This code presumes Passport is in the system.
+    //  MODIFY to use Session objects for authentication
+    ////////////////////////////////
+    function isAdmin(req, res, next) {
+        console.log("FIX "+Constants.ADMIN_CREDENTIALS);
+        console.log("FIXx "+Constants.ENGLISH);
+        return next(); // force showing admin
+        // must be authenticated
+  /*      if (req.isAuthenticated()) {
+            var usx = req.user;
+            var creds = usx.credentials;
+            console.log("Admin.isAdmin "+creds.length+" "+creds);
+            for(var i=0;i<creds.length;i++) {
+                console.log("Admin.isAdmin-1 "+creds[i]+" "+Constants.ADMIN_CREDENTIALS);
+                if (creds[i].trim() === Constants.ADMIN_CREDENTIALS) {
+                    return next();
+                }
+            }
+        }
+        return res.redirect('/'); */
+    };
+
+    function isPrivate(req, res, next) {
+        if (isPrivatePortal) {
+            if (req.isAuthenticated()) {return next();}
+            return res.redirect('/login');
+        } else {
+            return next();
+        }
+    };
+
+    function finishAuthenticate(req, jsonUser) {
+        console.log("AA "+JSON.stringify(jsonUser));
+        //\"rToken\":\"f4d3f872-0cae-444c-badf-632de6c5a118\"
+        var rToken = jsonUser.rToken;
+        console.log("BB "+rToken);
+        req.session[Constants.SESSION_TOKEN] = rToken;
+        // \"cargo\":{\"uGeoloc\":\"|\",\"uEmail\":\"sam@slow.com\",\"uHomepage\":\"\",
+        // \"uName\":\"sam\",\"uFullName\":\"Sam Slow\",\"uRole\":\"rur\",\"uAvatar\":\"\"}}"
+        var cargo = jsonUser.cargo;
+        console.log("CC "+JSON.stringify(cargo));
+        var email = cargo.uEmail;
+        var roles = cargo.uRole;
+        var id = cargo.uName;
+        req.session[Constants.USER_EMAIL] = email;
+        req.session[Constants.USER_ID] = id;
+        var where = roles.indexOf(Constants.ADMIN_CREDENTIALS);
+        if (where > -1) {
+            req.session[Constants.USER_IS_ADMIN] = "T";
+        } else {
+            req.session[Constants.USER_IS_ADMIN] = "F";
+        }
+        environment.setIsAuthenticated(true);
+        environment.setUserEmail(email);
+    };
+
+    function finishLogout(req) {
+        req.session[Constants.SESSION_TOKEN] = null;
+        req.session[Constants.USER_IS_ADMIN] = "F";
+        req.session[Constants.USER_EMAIL] = null;
+        environment.setIsAuthenticated(false);
+        environment.setUserEmail("");
+    };
+
+    function isLoggedIn(req, res, next) {
+        if (environment.getIsAuthenticated()) {return next();}
+        // if they aren't redirect them to the home page
+        // really should issue an error message
+        if (isPrivatePortal) {
+            return res.redirect('/login');
+        }
+        return res.redirect('/');
+    };
+
+    /////////////
+    // Routes
+    /////////////
+
+    app.get('/profile/:ID', function (req, res) {
+        var email = req.session[Constants.USER_EMAIL],
+            data = environment.getCoreUIData();
+        AdminModel.getUser(email, function ap(err, result) {
+            var cargo = result.cargo;
+            console.log("Admin.profile "+JSON.stringify(cargo));
+            /////////////////////////
+            //Admin.profile {"uGeoloc":"|","uEmail":"jackpark@gmail.com","uHomepage":"","uName
+            //":"jackpark","uFullName":"Jack Park","uRole":"rur, rar","uAvatar":""}
+            data.homepage = cargo.uHomepage;
+            var lat='',
+                lng='';
+            var gl = cargo.uGeoloc.trim();
+            var len = gl.length;
+            if (len > 10) {
+                var where = gl.indexOf('|');
+                lat = gl.slice(0, where);
+                lng = gl.slice((where+1), (len-1));
+            }
+            data.latitude = lat;
+            data.longitude = lng;
+            res.render('profile', data);
+        });
+
+    });
+
+    /**
+     * ??
+     */
+    app.get("/admin,setview/:id", function(req,res) {
+        var q = req.params.id;
+        console.log("Admin.setView "+q);
+        req.session.viewtype = q;
+        return res.redirect('/');
+    });
+
+    ///////////////////////////////
+    // Account functions
+    ///////////////////////////////
+
+    /**
+     * GET LogOut
+     */
+    app.get('/logout', function(req, res) {
+        req.session.clipboard = "";
+        AdminModel.logout(req.session[Constants.SESSION_TOKEN], function adminLogout(err, rslt) {
+            finishLogout(req);
+            return res.render('index', environment.getCoreUIData());
+        });
+    });
+
+    /**
+     * GET LogIn
+     */
+    app.get('/login', function(req, res) {
+        res.render('login', environment.getCoreUIData());
+    });
+
+    /**
+     * POST LogIn
+     */
+    app.post('/login', function(req, res, next) {
+        console.log('Login: '+req.body.email);
+        AdminModel.login(req, function adminLogin(err, rslt) {
+            console.log("LOGIN+ "+err+" "+JSON.stringify(rslt));
+///////////////////////////////
+//LOGIN+ undefined "{\"rMsg\":\"ok\",\"rToken\":\"f4d3f872-0cae-444c-badf-632de6c5a118\",
+// \"cargo\":{\"uGeoloc\":\"|\",\"uEmail\":\"sam@slow.com\",\"uHomepage\":\"\",
+// \"uName\":\"sam\",\"uFullName\":\"Sam Slow\",\"uRole\":\"rur\",\"uAvatar\":\"\"}}"
+///////////////////////////////
+// LOGIN+ undefined "{\"rMsg\":\"\",\"rToken\":\"\"}"
+///////////////////////////////
+
+            if (rslt.rToken === "") {
+                //not successful
+                return res.redirect('/login')
+            } else {
+                finishAuthenticate(req, rslt);
+                console.log("SESS "+req.session[Constants.USER_EMAIL]);
+            }
+            return res.render('index', environment.getCoreUIData());
+        });
+     });
+
+    /**
+     * GET SignUp
+     */
+    app.get('/signup', function(req, res){
+        var data = environment.getCoreUIData(req);
+        data.invitationOnly = environment.getIsInvitationOnly();
+        return res.render('signup', data);
+    });
+
+    /**
+     * POST Validate
+     */
+    app.post('/validate', function(req, res) {
+        var handle = req.body.vhandle;
+        console.log("Validating "+handle);
+        AdminModel.handleUnique(handle, function(err,truth) {
+            console.log("Validating-1 "+truth);
+            var data = environment.getCoreUIData(req);
+            data.invitationOnly = isInvitationOnly;
+            if (truth) {data.hndl = handle;}
+            return res.render('signup', data);
+        });
+    });
+
+    /**
+     * The new account workhorse
+     * @param req
+     * @param res
+     */
+    function doPostSignup(req, res) {
+        var email = req.body.email;
+        AdminModel.createAccount(req, function adminCreate(err, rslt) {
+            console.log("Admin.signup-2 ");
+            if (!err) {
+                AdminModel.removeInvitation(email, function adminRemove(err, truth) {
+                    console.log("Admin.signup-4 ");
+                    return res.redirect('/');
+                });
+            } else {
+                //TODO deal with error
+                return res.redirect('/'); // for now
+            }
+        });
+    };
+    /**
+     * POST SignUp
+     */
+    app.post('/signup', function(req, res) {
+        var isInvitationOnly = environment.getIsInvitationOnly(),
+            email = req.body.email;
+        console.log("Admin.signup "+isInvitationOnly+" "+email);
+        if (isInvitationOnly) {
+            AdminModel.hasInvitation(email, function adminHasInvite(err, truth) {
+                console.log("Admin.signup-1 "+JSON.stringify(truth));
+                // bad:  {"rMsg":"not found","rToken":""}
+                // good: {"rMsg":"ok","rToken":""}
+                var msg = truth.rMsg;
+                if (msg === 'ok') {
+                    return doPostSignup(req, res);
+                 } else {
+                    console.log("Admin.signup-3 ");
+                    return res.redirect('/');
+                }
+            });
+        } else {
+            console.log("Admin.signup-5 ");
+            return doPostSignup(req, res);
+        }
+    });
+
+    app.get('/inviteuser', isAdmin, function(req, res) {
+        return res.render('inviteuser',environment.getCoreUIData(req));
+    });
+
+    app.post('/inviteuser', isAdmin, function(req,res) {
+        var email = req.body.email;
+        console.log("ABC " + JSON.stringify(req.body));
+        console.log("DEF " + JSON.stringify(req.query));
+        AdminModel.addInvitation(email, function (err, data) {
+            console.log("Admin.inviteUser " + email + " " + err + " " + data);
+            return res.redirect('/admin');
+        });
+    });
+
+    app.get('/listusers', isAdmin, function(req, res) {
+        //TODO this needs to do paging
+        AdminModel.fillUserDatatable(0, 50, function adminListUsers(err, json) {
+            console.log("AdminModel.listUsers "+json);
+            var data = environment.getCoreUIData(req);
+            data.usrtable = json.cargo;
+            res.render('listusers',data);
+        });
+    });
+
+    app.get('/listinvites', isAdmin, function(req, res) {
+        AdminModel.fillInviteTable(0, 50, function adminListUsers(err, json) {
+            console.log("AdminModel.listInvites "+json);
+            var data = environment.getCoreUIData(req);
+            data.usrtable = json;
+            res.render('listinvites',data);
+        });
+
+    });
+
+    app.get('/selectuser', isAdmin, function(req, res) {
+        var email = req.query.email;
+        console.log("Admin.selectuser "+email);
+        AdminModel.getUser(email, function(err, data) {
+            console.log("Admin.selectuser-1 "+err+" "+JSON.stringify(data));
+            //TODO watch for null
+            var d = environment.getCoreUIData(req)
+            d.name = data.cargo.uName;
+            d.credentials = data.cargo.uRole;
+            res.render('editcredentials',d);
+        });
+
+    });
+
+    app.get('/removeuser', isAdmin, function(req,res) {
+        var userId = req.query.handle;
+        console.log("Admin.selectuser "+userId);
+        AdminModel.removeUser(userId, function(err,data) {
+            res.redirect('/admin');
+        });
+
+    });
+
+    app.post('/editcredentials', isAdmin, function(req,res) {
+        var userId = req.body.name;
+        var creds = req.body.credentials;
+        var ic = creds.split(',');
+        var nc = [];
+        for (var i=0;i<ic.length;i++) {
+            nc.push(ic[i].trim());
+        }
+
+        console.log('Admin,editcredentials '+userId+" "+nc);
+        AdminModel.updateUserRole(userId, creds, function aUur(err, data) {
+            console.log('Admin,editcredentials-1 '+err);
+            return res.redirect('/admin');
+        });
+    });
+    ///////////////////////////////
+    // Profile functions
+    ///////////////////////////////
+
+    app.post('/changeEmail', isLoggedIn, function(req, res) {
+        var userId = req.session[Constants.USER_ID],
+            newEmail = email;
+        AdminModel.updateUserEmail(userId, newEmail, function aUe(err, rslt) {
+            return res.redirect('/');
+        });
+    });
+
+    app.post("/changeHomepage", isLoggedIn, function(req, res) {
+        console.log("CHANGE HOMEPAGE");
+        return res.redirect('/');
+    });
+
+    app.post("/changeGeoLoc", isLoggedIn, function(req, res) {
+        console.log("CHANGE GEOLOC");
+        return res.redirect('/');
+    });
+
+    app.post("/changePwd", isLoggedIn, function(req, res) {
+        console.log("CHANGE PASSWORD");
+        return res.redirect('/');
+    });
+
+    ///////////////////////////////
+    // Admin functions
+    ///////////////////////////////
+    app.get('/admin', isAdmin, function(req, res) {
+        res.render('admin',environment.getCoreUIData(req));
+    });
+    app.get('/admin/setmessage', isAdmin, function(req,res) {
+        var msg = req.query.message;
+        environment.setMessage(msg);
+        res.redirect('/admin');
+    });
+    app.get('/clearmessage', isAdmin, function(req,res) {
+        environment.clearMessage();
+        res.redirect('/admin');
+    });
+};
