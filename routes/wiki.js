@@ -33,6 +33,15 @@ exports.plugin = function(app, environment) {
         sd
     };
 
+    function getUser(req) {
+        var result = req.session[Constants.THE_USER];
+        if (!result) {
+            result = {};
+            result.uName = Constants.GUEST_USER;
+        }
+        return result;
+    };
+
     /////////////
     // Menu
     /////////////
@@ -61,7 +70,7 @@ exports.plugin = function(app, environment) {
             credentials = req.user.credentials;
         }
 
-        BlogModel.fillDatatable(start, count, userId, userIP, sToken, function blogFill(data, countsent, totalavailable) {
+        WikiModel.fillDatatable(start, count, userId, userIP, sToken, function blogFill(data, countsent, totalavailable) {
             console.log("Wiki.index " + data);
             var cursor = start + countsent;
             var json = environment.getCoreUIData();
@@ -75,12 +84,40 @@ exports.plugin = function(app, environment) {
         });
     });
 
+    app.get('/wiki/:id', isPrivate, function(req, res) {
+        var q = req.params.id,
+            contextLocator = req.query.contextLocator;
+        console.log("GETWIKI"+q);
+        if (q) {
+            var userId = req.session[Constants.USER_ID],
+                userIP = '',
+                theUser = getUser(req),
+                sToken = req.session[Constants.SESSION_TOKEN];
+            CommonModel.fetchTopic(q, userId, userIP, sToken, function bFT(err, rslt) {
+                var data =  environment.getCoreUIData();
+                if (rslt.cargo) {
+                    //TODO populateConversationTopic
+                    data = CommonModel.populateTopic(rslt.cargo, theUser);
+                }
+                data.locator = q;
+                if (contextLocator && contextLocator !== "") {
+                    data.context = contextLocator;
+                } else {
+                    data.context = q; // we are talking about responding to this blog
+                }
+                return res.render('topic', data);
+            });
+        } else {
+            //That's not good!
+            //TODO
+        }
+    });
     /**
-     * GET new blog post form
+     * GET new wiki post form
      */
     app.get('/wiki/new', isLoggedIn, function (req, res) {
         var data = environment.getCoreUIData(req);
-        data.formtitle = "New Blog Post";
+        data.formtitle = "New Wiki Topic";
         data.isNotEdit = true;
         return res.render('blogform', data); //,
     });
@@ -90,7 +127,7 @@ exports.plugin = function(app, environment) {
      */
     var _blogsupport = function (body, usx, callback) {
         if (body.locator === "") {
-            BlogModel.create(body, usx, function (err, result) {
+            WikiModel.createWikiTopic(body, usx, function (err, result) {
                 return callback(err, result);
             });
         } else {

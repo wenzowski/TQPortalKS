@@ -47,6 +47,7 @@ var HttpClient = function() {
             });
 
             response.on('end', function(){
+                console.log("HTTP-POST "+body);
                 result = JSON.parse(body);
                 return callback(err, result);
             });

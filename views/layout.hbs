@@ -51,7 +51,9 @@
                        {{/each}}
                     </ul>
                 </li>
-                <li><a href="/admin">Admin</a></li>
+                {{#if isAdmin}}
+                    <li><a href="/admin">Admin</a></li>
+                {{/if}}
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown">
@@ -77,6 +79,7 @@
 </div> <!-- container -->
 <script src="/js/bootstrap.js"></script>
 <script src="/js/jquery-columnnav-1.1.0.js"></script>
+<script src="/js/conversation.js"></script>
 <script src="/js/jstree.js"></script>
 </body>
 </html>

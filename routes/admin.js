@@ -9,28 +9,22 @@ exports.plugin = function(app, environment) {
         AdminModel = environment.getAdminModel();
     console.log("Admin "+AdminModel);
 
-    ////////////////////////////////
-    // TODO
-    //  This code presumes Passport is in the system.
-    //  MODIFY to use Session objects for authentication
-    ////////////////////////////////
+
     function isAdmin(req, res, next) {
-        console.log("FIX "+Constants.ADMIN_CREDENTIALS);
-        console.log("FIXx "+Constants.ENGLISH);
-        return next(); // force showing admin
-        // must be authenticated
-  /*      if (req.isAuthenticated()) {
-            var usx = req.user;
-            var creds = usx.credentials;
-            console.log("Admin.isAdmin "+creds.length+" "+creds);
-            for(var i=0;i<creds.length;i++) {
-                console.log("Admin.isAdmin-1 "+creds[i]+" "+Constants.ADMIN_CREDENTIALS);
-                if (creds[i].trim() === Constants.ADMIN_CREDENTIALS) {
-                    return next();
-                }
+        var theUser = req.session[Constants.THE_USER];
+        console.log("ADMINUSER "+theUser);
+        if (theUser) {
+            var roles = theUser.uRole;
+            var where = roles.indexOf(Constants.ADMIN_CREDENTIALS);
+            console.log("ADMINROLES "+roles+" "+where);
+            if (where > -1) {
+                return next();
+            } else {
+                return res.redirect('/');
             }
+        } else {
+            return res.redirect('/');
         }
-        return res.redirect('/'); */
     };
 
     function isPrivate(req, res, next) {
@@ -51,6 +45,8 @@ exports.plugin = function(app, environment) {
         // \"cargo\":{\"uGeoloc\":\"|\",\"uEmail\":\"sam@slow.com\",\"uHomepage\":\"\",
         // \"uName\":\"sam\",\"uFullName\":\"Sam Slow\",\"uRole\":\"rur\",\"uAvatar\":\"\"}}"
         var cargo = jsonUser.cargo;
+        // hang on to the whole user object
+        req.session[Constants.THE_USER] = cargo;
         console.log("CC "+JSON.stringify(cargo));
         var email = cargo.uEmail;
         var roles = cargo.uRole;
@@ -59,9 +55,11 @@ exports.plugin = function(app, environment) {
         req.session[Constants.USER_ID] = id;
         var where = roles.indexOf(Constants.ADMIN_CREDENTIALS);
         if (where > -1) {
-            req.session[Constants.USER_IS_ADMIN] = "T";
+            environment.setIsAdmin(true);
+            req.session[Constants.USER_IS_ADMIN] = true;
         } else {
-            req.session[Constants.USER_IS_ADMIN] = "F";
+            environment.setIsAdmin(false);
+            req.session[Constants.USER_IS_ADMIN] = false;
         }
         environment.setIsAuthenticated(true);
         environment.setUserEmail(email);
@@ -71,7 +69,9 @@ exports.plugin = function(app, environment) {
         req.session[Constants.SESSION_TOKEN] = null;
         req.session[Constants.USER_IS_ADMIN] = "F";
         req.session[Constants.USER_EMAIL] = null;
+        req.session[Constants.THE_USER] = null;
         environment.setIsAuthenticated(false);
+        environment.setIsAdmin(false);
         environment.setUserEmail("");
     };
 
@@ -346,6 +346,7 @@ exports.plugin = function(app, environment) {
     // Admin functions
     ///////////////////////////////
     app.get('/admin', isAdmin, function(req, res) {
+        console.log("FIRING ADMIN");
         res.render('admin',environment.getCoreUIData(req));
     });
     app.get('/admin/setmessage', isAdmin, function(req,res) {

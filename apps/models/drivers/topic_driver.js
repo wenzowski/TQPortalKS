@@ -45,8 +45,10 @@ var TopicDriver =  module.exports = function(environment) {
     };
 
     /**
-     * If a bookmark node exists for the given <code>url</code>, return it.
-     * Otherwise, create a new bookmark node and return it.
+     * <p>If a bookmark node exists for the given <code>url</code>, return it.
+     * Otherwise, create a new bookmark node and return it.</p>
+     * <p>If <code>tagLabelArray</code> is not <code>null</code>, process those
+     * tags</p>
      * @param url
      * @param title
      * @param language
@@ -68,12 +70,14 @@ var TopicDriver =  module.exports = function(environment) {
         query.Lang = language;
         if (tagLabelArray !== null)
             query.ListProperty = tagLabelArray;
-       //TODO
-    };
+        httpClient.post(urx, query, function tdFCB(err, rslt) {
+            return callback(err, rslt);
+        });
+   };
 
     /**
      * Does not really return anything except a success message unless errors
-     * @param bookmarkLocator -- the bookmark node for which tags are related
+     * @param topicLocator -- the topic node for which tags are related
      * @param tagLabelArray -- a list of tagLabel strings
      * @param language
      * @param userId
@@ -81,15 +85,17 @@ var TopicDriver =  module.exports = function(environment) {
      * @param sToken
      * @param callback
      */
-    self.findOrProcessTags = function(bookmarkLocator, tagLabelArray, language, userId,
+    self.findOrProcessTags = function(topicLocator, tagLabelArray, language, userId,
                                 userIP, sToken, callback) {
         var urx = '/tm/',
             verb = Constants.FIND_OR_PROCESS_TAG,
             query = queryUtil.getCoreQuery(verb, userId, userIP, sToken);
-        query.lox = bookmarkLocator;
+        query.lox = topicLocator;
         query.ListProperty = tagLabelArray;
         query.Lang = language;
-       //TODO
+        httpClient.post(urx, query, function tdSNIT(err, rslt) {
+            return callback(err, rslt);
+        });
     };
 
     self.listUserTopics = function(start, count, userId, userIP, sToken, callback) {
@@ -105,7 +111,7 @@ var TopicDriver =  module.exports = function(environment) {
         });
     };
 
-    self.listInstanceTopics = function(typeLocator, start, count, userId, userIP, sToken) {
+    self.listInstanceTopics = function(typeLocator, start, count, userId, userIP, sToken, callback) {
         var urx = '/tm/',
             verb = Constants.LIST_INSTANCE_TOPICS,
             query = queryUtil.getCoreQuery(verb, userId, userIP, sToken);
@@ -128,7 +134,9 @@ var TopicDriver =  module.exports = function(environment) {
             query = queryUtil.getCoreQuery(verb, userId, userIP, sToken);
         query.cargo = jsonTopic;
         console.log("SubmitNewInstanceTopic+ "+JSON.stringify(query));
-        //TODO
+        httpClient.post(urx, query, function tdSNIT(err, rslt) {
+            return callback(err, rslt);
+        });
     };
 
     self.submitNewSubclassTopic = function(jsonTopic, userId, userIP, sToken, callback) {

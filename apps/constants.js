@@ -9,6 +9,7 @@ module.exports.ENGLISH		    = 'en';
 // backside stuff
 ///////////////////////////
 module.exports.SYSTEM_USER	    = "SystemUser";
+module.exports.GUEST_USER       = "GuestUser";
 module.exports.MAX_HIT_COUNT    = 30;
 module.exports.TOPICS_INDEX		= "topics";
 
@@ -39,6 +40,8 @@ module.exports.UPDATE_USER_DATA		=   "UpdUsDat";
 module.exports.LOAD_TREE =              'LoadTree';
 module.exports.GET_SEARCH_PARAMS =      'GetSearchParams';
 module.exports.LOGOUT =                 'LogOut';
+module.exports.FIND_OR_PROCESS_TAG =    'FindProcessTag';
+module.exports.FIND_OR_CREATE_BOOKMARK	= "FindProcessBookmark";
 //NODE PROPERTIES
 module.exports.CREATORID_PROP =         "crtr";
 module.exports.DETAILS_PROP =           "details";
@@ -52,6 +55,7 @@ module.exports.LOCATOR_PROP =           "lox";
 module.exports.SUBCLASS_OF_PROP =       "sbOf";
 module.exports.TAG_NAMES_PROP =         "TagNames";  //takes an array [name, name, name]
 module.exports.URL_PROP =               "url";
+module.exports.EXTRAS   =               "extras"; // field with a JSONObject with added key/value pairs for newInstance
 //NODE TYPES
 module.exports.BOOKMARK_NODE_TYPE =     "BookmarkNodeType";
 module.exports.CHALLENGE_TYPE =         "ChallengeNodeType";
@@ -63,6 +67,7 @@ module.exports.GUILD_TYPE =             "GuildNodeType";
 module.exports.QUEST_TYPE =             "QuestNodeType";
 module.exports.AVATAR_TYPE =            "AvatarNodeType";
 module.exports.TAG_TYPE =               "TagNodeType";
+module.exports.USER_TYPE =              "UserType";
 module.exports.THEME_TYPE =             "ThemeNodeType";
 module.exports.PRO_TYPE =               "ProNodeType";
 module.exports.CON_TYPE =               "ConNodeType";
@@ -71,6 +76,10 @@ module.exports.POSITION_TYPE =          "PositionNodeType";
 module.exports.CONVERSATION_MAP_TYPE =  "ConversationMapNodeType";
 module.exports.ONTOLOGY_NODE_TYPE =     "OntologyNodeType";
 module.exports.GRAPH_NODE_TYPE =        "GraphNodeType";
+module.exports.BLOG_TYPE				= "BlogNodeType";
+module.exports.WIKI_TYPE                = "WikiNodeType";
+module.exports.MICROBLOG_TYPE			= "MicroblogNodeType";
+
 //RELATIONS
 module.exports.DOCUMENT_CREATOR_RELN =  "DocumentCreatorRelationType";
 module.exports.TAG_BOOKMARK_RELN =      "TagDocumentRelationType";
@@ -122,7 +131,7 @@ module.exports.THEME =                  "/images/theme.png";
 module.exports.THEME_SM =               "/images/theme_sm.png";
 module.exports.LINK =                   "/images/link.png";
 module.exports.LINK_SM =                "/images/link_sm.png";
-
+module.exports.CHILD_NODE_LIST =        "cNL";
 //CREDENTIALS
 module.exports.ADMIN_CREDENTIALS        ="rar";
 //SESSION OBJECTS
@@ -130,3 +139,4 @@ module.exports.SESSION_TOKEN =          "SessToken";
 module.exports.USER_EMAIL =             "SessUsrEmail";
 module.exports.USER_ID =                "SessUserId";
 module.exports.USER_IS_ADMIN =          "SessUsrAdmin";  //will be "T" or "F"
+module.exports.THE_USER  =              "SessionUser";

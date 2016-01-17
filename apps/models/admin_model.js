@@ -151,6 +151,7 @@ var AdminModel =  module.exports = function(environment) {
     /**
      * Fetch user identified by <code>email</code> strictly for administrative
      * purposes -- from the user database
+     * NOTE: this is an account user, <em>not</em> the topic map's representation of this user
      * @param email
      * @param callback signature (err, result)
      */

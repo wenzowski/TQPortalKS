@@ -21,6 +21,14 @@ exports.plugin = function(app, environment) {
         }
     };
 
+    function getUser(req) {
+        var result = req.session[Constants.THE_USER];
+        if (!result) {
+            result = {};
+            result.uName = Constants.GUEST_USER;
+        }
+        return result;
+    };
     /////////////
     // Menu
     /////////////
@@ -30,7 +38,7 @@ exports.plugin = function(app, environment) {
     /////////////
 
     /**
-     * Initial fetch of the /blog landing page
+     *
      */
     app.get('/user', isPrivate, function (req, res) {
         var data =  environment.getCoreUIData();
@@ -46,12 +54,28 @@ exports.plugin = function(app, environment) {
 
     app.get('/user/:id', isPrivate, function (req, res) {
         var q = req.params.id;
-        UserModel.getUser(q, function uGU( err, rslt) {
+        if (q) {
+            var userId = req.session[Constants.USER_ID],
+                userIP = '',
+                theUser = getUser(req),
+                sToken = req.session[Constants.SESSION_TOKEN];
+            CommonModel.fetchTopic(q, userId, userIP, sToken, function uFT(err, rslt) {
+                var data =  environment.getCoreUIData();
+                if (rslt.cargo) {
+                    data = CommonModel.populateTopic(rslt.cargo, theUser);
+                }
+                return res.render('topic', data);
+            });
+        } else {
+            //That's not good!
+            //TODO
+        }
+/*        UserModel.getUser(q, function uGU( err, rslt) {
             var data =  environment.getCoreUIData();
             if (rslt.cargo) {
                 data = CommonModel.populateTopic(rslt.cargo);
             }
             return res.render('topic', data);
-        });
+        }); */
     });
 };

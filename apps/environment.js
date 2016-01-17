@@ -5,6 +5,7 @@
  */
 var Req = require('./models/drivers/http_request'),
     Blog = require('./models/blog_model'),
+    Bm = require('./models/bookmark_model'),
     Common = require('./models/common_model'),
     Admin = require('./models/admin_model'),
     Conver = require('./models/conversation_model'),
@@ -31,6 +32,7 @@ var Environment = function() {
          commonModel,
          adminModel,
          blogModel,
+         bookmarkModel,
          conversationModel,
          kanbanModel,
          tagModel,
@@ -43,6 +45,7 @@ var Environment = function() {
      //view data
          appMenu,
          isAuthenticated,
+         isAdmin,
          isInvitationOnly,
          userEmail;
     console.log("Envirionment starting "+httpClient);
@@ -63,6 +66,7 @@ var Environment = function() {
         commonModel = new Common(this);
         adminModel = new Admin(this);
         blogModel = new Blog(this);
+        bookmarkModel = new Bm(this);
         conversationModel = new Conver(this);
         kanbanModel = new Kan(this);
         tagModel = new Tag(this);
@@ -100,15 +104,23 @@ var Environment = function() {
         isAuthenticated = truth;
     };
 
+
     self.getIsAuthenticated = function() {
         return isAuthenticated;
     };
+    self.setIsAdmin = function(truth) {
+        isAdmin = truth;
+    }
+    self.getIsAdmin = function(truth) {
+        return isAdmin;
+    }
     self.setUserEmail = function(email) {
         userEmail = email;
     };
     self.getCoreUIData = function() {
         var result = {};
         result.isAuthenticated = isAuthenticated;
+        result.isAdmin = isAdmin;
         result.email = userEmail;
         result.appmenu = appMenu;
         result.isInvitationOnly = isInvitationOnly;
@@ -159,8 +171,12 @@ var Environment = function() {
         return blogModel;
     };
 
-    self.getConversationModel = function() {
-        return blogModel;
+    self.getBookmarkModel = function() {
+        return bookmarkModel;
+    };
+
+    self.getTagModel = function() {
+        return tagModel;
     };
 
     self.getKanbanModel = function() {
@@ -176,7 +192,7 @@ var Environment = function() {
     };
 
     self.getConversationModel = function() {
-        return blogModel;
+        return conversationModel;
     };
 
     console.log("FOO "+self.getHttpClient());
