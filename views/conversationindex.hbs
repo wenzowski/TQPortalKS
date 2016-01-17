@@ -1,0 +1,23 @@
+<h1>Conversation Central!</h1>
+
+{{#if isAuthenticated}}
+    <div class="form-group">
+        <a href="/conversationnew"><button type="submit" class="btn btn-btn-success btn-small">New Conversation</button></a><br />
+    </div>
+{{/if}}
+<!-- Pagination data -->
+<div id="tabledata"  start="{{start}}" count="{{count}}" total="{{total}}"></div>
+<div class="col-xs-10 pre-scrollable"  style="border: 1px solid #e1e1e8;"> <!-- position:"left"; -->
+    <div class="tableindex">
+        <!-- TODO paint the table here -->
+        {{#each cargo}}
+            <a href="/conversation/{{lox}}"><img src="{{sIco}}"> {{label}}</a><br/>
+        {{/each}}
+    </div>
+</div>
+<div class="col-xs-12"> <!-- position:"left"; -->
+    <div class="pagination">
+        <!-- TODO paint pagination here -->
+    </div>
+</div>
+
