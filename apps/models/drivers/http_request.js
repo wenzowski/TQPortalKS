@@ -34,7 +34,7 @@ var HttpClient = function() {
      * @param callback
      */
     self.post = function(path, queryJSON, callback) {
-        var content = JSON.stringify(queryJSON);
+        var content = encodeURI(JSON.stringify(queryJSON));
         var urx = _baseURL+path+content;
         var err,
             body='',
