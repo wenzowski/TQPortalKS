@@ -47,6 +47,7 @@ var Environment = function() {
          isAuthenticated,
          isAdmin,
          isInvitationOnly,
+         theMessage,
          userEmail;
     console.log("Envirionment starting "+httpClient);
 
@@ -110,10 +111,13 @@ var Environment = function() {
     };
     self.setIsAdmin = function(truth) {
         isAdmin = truth;
-    }
+    };
     self.getIsAdmin = function(truth) {
         return isAdmin;
-    }
+    };
+    self.setMessage = function(msg) {
+        theMessage = msg;
+    };
     self.setUserEmail = function(email) {
         userEmail = email;
     };
@@ -121,6 +125,7 @@ var Environment = function() {
         var result = {};
         result.isAuthenticated = isAuthenticated;
         result.isAdmin = isAdmin;
+        result.themessage = theMessage;
         result.email = userEmail;
         result.appmenu = appMenu;
         result.isInvitationOnly = isInvitationOnly;
