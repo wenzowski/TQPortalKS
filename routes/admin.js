@@ -95,21 +95,30 @@ exports.plugin = function(app, environment) {
         AdminModel.getUser(email, function ap(err, result) {
             var cargo = result.cargo;
             console.log("Admin.profile "+JSON.stringify(cargo));
-            /////////////////////////
+            ////////////////////////
+            // A crash fetching profile on SystemUser
+            // HOW DID THAT HAPPEN?
+            //Admin.profile undefined
+            // /home/jackpark/TQPortalKS/routes/admin.js:101
+            // cannot read cargo.uHomepage
+            // A CASE can be made for if (cargo) above
+             /////////////////////////
             //Admin.profile {"uGeoloc":"|","uEmail":"jackpark@gmail.com","uHomepage":"","uName
             //":"jackpark","uFullName":"Jack Park","uRole":"rur, rar","uAvatar":""}
-            data.homepage = cargo.uHomepage;
-            var lat='',
-                lng='';
-            var gl = cargo.uGeoloc.trim();
-            var len = gl.length;
-            if (len > 10) {
-                var where = gl.indexOf('|');
-                lat = gl.slice(0, where);
-                lng = gl.slice((where+1), (len-1));
+            if (cargo) {
+                data.homepage = cargo.uHomepage;
+                var lat = '',
+                    lng = '';
+                var gl = cargo.uGeoloc.trim();
+                var len = gl.length;
+                if (len > 10) {
+                    var where = gl.indexOf('|');
+                    lat = gl.slice(0, where);
+                    lng = gl.slice((where + 1), (len - 1));
+                }
+                data.latitude = lat;
+                data.longitude = lng;
             }
-            data.latitude = lat;
-            data.longitude = lng;
             res.render('profile', data);
         });
 
@@ -136,7 +145,7 @@ exports.plugin = function(app, environment) {
         req.session.clipboard = "";
         AdminModel.logout(req.session[Constants.SESSION_TOKEN], function adminLogout(err, rslt) {
             finishLogout(req);
-            return res.render('index', environment.getCoreUIData());
+            return res.redirect('/');
         });
     });
 

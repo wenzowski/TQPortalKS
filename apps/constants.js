@@ -42,6 +42,7 @@ module.exports.GET_SEARCH_PARAMS =      'GetSearchParams';
 module.exports.LOGOUT =                 'LogOut';
 module.exports.FIND_OR_PROCESS_TAG =    'FindProcessTag';
 module.exports.FIND_OR_CREATE_BOOKMARK	= "FindProcessBookmark";
+module.exports.LIST_TREE_CHILD_NODES	= "ListTreeNodes";
 //NODE PROPERTIES
 module.exports.CREATORID_PROP =         "crtr";
 module.exports.DETAILS_PROP =           "details";

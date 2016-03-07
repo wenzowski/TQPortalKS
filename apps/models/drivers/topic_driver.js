@@ -51,6 +51,7 @@ var TopicDriver =  module.exports = function(environment) {
      * tags</p>
      * @param url
      * @param title
+     * @param details cannot be <code>null</code>
      * @param language
      * @param tagLabelArray  can be empty array or null
      * @param userId
@@ -58,7 +59,7 @@ var TopicDriver =  module.exports = function(environment) {
      * @param sToken
      * @param callback
      */
-    self.findOrCreateBookmark = function(url, title, language, tagLabelArray,
+    self.findOrCreateBookmark = function(url, title, details, language, tagLabelArray,
                                    userId, userIP, sToken, callback) {
         console.log("FOCB "+url+" | "+title+" | "+language+" | "+tagLabelArray+
             " | "+userId+" | "+userIP+" | "+sToken);
@@ -67,6 +68,7 @@ var TopicDriver =  module.exports = function(environment) {
             query = queryUtil.getCoreQuery(verb, userId, userIP, sToken);
         query.url = url;
         query.label = title;
+        query.details = details;
         query.Lang = language;
         if (tagLabelArray !== null)
             query.ListProperty = tagLabelArray;
@@ -125,6 +127,25 @@ var TopicDriver =  module.exports = function(environment) {
 
     self.listSubclassTopics = function(superClassLocator, start, count, userId, userIP, sToken) {
         //TODO
+    };
+
+    /**
+     * Given a conversation <code>rootNodeLocator</code>, fetch all the
+     * child nodes of this root node, recursively. Returned as a
+     * JSON map {locator:node}
+     * @param rootNodeLocator
+     * @param userId
+     * @param userIP
+     * @param sToken
+     */
+    self.listTreeChildNodesJSON = function(rootNodeLocator, userId, userIP, sToken) {
+        var urx = '/tm/',
+            verb = Constants.LIST_TREE_CHILD_NODES,
+            query = queryUtil.getCoreQuery(verb, userId, userIP, sToken);
+        query.lox = locator;
+        httpClient.get(urx, query, function tdLUT(err, rslt) {
+            return callback(err, rslt);
+        });
     };
 
     self.submitNewInstanceTopic = function(jsonTopic, userId, userIP, sToken, callback) {

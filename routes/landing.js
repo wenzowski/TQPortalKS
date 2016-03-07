@@ -16,7 +16,8 @@ exports.plugin = function(app, environment) {
     app.get("/", function(req, res) {
         var data = environment.getCoreUIData();
         data.title = "TQPortalKS";
-        res.render('index',  data);
+        //return res.render('index',  data);
+        return res.render('dragons', data);
     });
 
     app.post("/landing", function(req, res) {

@@ -156,7 +156,7 @@ var CommonModel =  module.exports = function(environment) {
     // \"documentLabel\":\"Tag Two\",\"documentType\":\"TagNodeType\",\"relationLabel\":\"TagBookmarkRelationType\",
     // \"documentSmallIcon\":\"\\/images\\/tag_sm.png\"}"
     function cleanPivot(pivot) {
-        return JSON.parse(pivot);
+        return pivot; //JSON.parse(pivot);
     }
 
     function extractTagPivots(pivots) {
@@ -472,9 +472,12 @@ var CommonModel =  module.exports = function(environment) {
         if (jsonTopic.url) {
             result.url = jsonTopic.url;
         }
-        result.userid = jsonTopic.crtr;
-        result.username = jsonTopic.crtr;
-        result.date = jsonTopic.lEdDt;
+        //DO NOT PAINT SYSTEM USER
+        if (jsonTopic.crtr !== 'SystemUser') {
+            result.userid = jsonTopic.crtr;
+            result.username = jsonTopic.crtr;
+            result.date = jsonTopic.lEdDt;
+        }
         var pivots = jsonTopic.pvL;
         if (pivots) {
             var piv = extractTagPivots(pivots);

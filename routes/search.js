@@ -29,7 +29,8 @@ exports.plugin = function(app, environment) {
      * Initial fetch of the /blog landing page
      */
     app.get('/search', isPrivate, function(req, res) {
-        var data = environment.getCoreUIData();
+        var query = req.query.srch-term,
+            data = environment.getCoreUIData();
         data.start=0;
         data.count=Constants.MAX_HIT_COUNT; //pagination size
         data.total=0;
@@ -41,6 +42,12 @@ exports.plugin = function(app, environment) {
         var q = req.params.id,
             start = parseInt(req.query.start),
             count = parseInt(req.query.count);
+        if (!start) {
+            start = 0;
+        }
+        if (!count) {
+            count = Constants.MAX_HIT_COUNT;
+        }
         //TODO req.user ???
         SearchModel.runSearch(q, req.user, "en", start, count, function searchRunSearch(data, countsent, totalavailable) {
            //TODO

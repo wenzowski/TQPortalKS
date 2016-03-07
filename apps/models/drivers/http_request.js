@@ -34,7 +34,8 @@ var HttpClient = function() {
      * @param callback
      */
     self.post = function(path, queryJSON, callback) {
-        var content = encodeURI(JSON.stringify(queryJSON));
+        var content = encodeURIComponent(JSON.stringify(queryJSON));
+        console.log("POST "+content);
         var urx = _baseURL+path+content;
         var err,
             body='',
@@ -65,7 +66,7 @@ var HttpClient = function() {
      * @param callback signature (err, rslt)
      */
     self.get = function(path, queryJSON, callback) {
-        var content = JSON.stringify(queryJSON);
+        var content = encodeURIComponent(JSON.stringify(queryJSON));
         var urx = _baseURL+path+content;
         var err,
             body='',
