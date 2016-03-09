@@ -44,43 +44,41 @@ app.use(session({
 // Trailing routes added for 404 errors
 ////////////////////////////
 var MyEnvironment = new Env();
-MyEnvironment.init(function appFcn(err) {
-  console.log("Environment initialized "+err);
-  /**
-   * Fire up an individual app from this <code>file</code>
-   * @param file: a .js app file which exports a function(app,database)
-   */
-  function startApp(file) {
-    var v = file;
-    var px = require("./routes/" + v).plugin;
-    px(app, MyEnvironment);
-  };
+MyEnvironment.init();
+/**
+ * Fire up an individual app from this <code>file</code>
+ * @param file: a .js app file which exports a function(app,database)
+ */
+function startApp(file) {
+  var v = file;
+  var px = require("./routes/" + v).plugin;
+  px(app, MyEnvironment);
+};
 
-  /**
-   * load all *.js files from the /routes directory
-   */
-  function loadApps() {
-    console.log("Server Starting-3");
-    require("fs").readdirSync("./routes").forEach(function (file) {
-      // only load javascript files
-      if (file.indexOf(".js") > -1) {
-        console.log("BURP " + file);
-        startApp(file);
-      }
-    });
-  };
-  // boot the plugin apps
-  loadApps();
-
-  ////////////////////////////
-  //Server
-  ////////////////////////////
-  // all environments
-  app.set("port", parseInt(MyEnvironment.getConfigProperties().port) || 3000);
-
-  http.createServer(app).listen(app.get("port"), function () {
-    console.log("Express server listening on port " + app.get("port"));
+/**
+ * load all *.js files from the /routes directory
+ */
+function loadApps() {
+  console.log("Server Starting-3");
+  require("fs").readdirSync("./routes").forEach(function (file) {
+    // only load javascript files
+    if (file.indexOf(".js") > -1) {
+      console.log("BURP " + file);
+      startApp(file);
+    }
   });
+};
+// boot the plugin apps
+loadApps();
 
+////////////////////////////
+//Server
+////////////////////////////
+// all environments
+app.set("port", parseInt(MyEnvironment.getConfigProperties().port) || 3000);
+
+http.createServer(app).listen(app.get("port"), function () {
+  console.log("Express server listening on port " + app.get("port"));
 });
+
 module.exports = app;

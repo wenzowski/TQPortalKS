@@ -1,144 +1,122 @@
+var request = require('request');
+
 /**
- * Created by park on 11/16/2015.
- * @see https://nodejs.org/api/http.html#http_http_request_options_callback
- * @see https://www.npmjs.com/package/http-post
+ * HttpClient created by wenzowski on 3/8/2016 based on code by park.
+ * @see https://github.com/request/request
  */
-var http = require('http'),
-    post = require('http-post');
+module.exports = HttpClient;
 
-var HttpClient = function() {
-    var self = this,
-        _host,
-        _port,
-        _baseURL;
+/**
+ * REQUIRED -- set in environment.js
+ * @param host
+ * @param port
+ *
+ * OPTIONAL
+ * @param protocol
+ */
+function HttpClient(host, port, protocol) {
+  if (!host) throw 'host is required';
+  if (!port) throw 'port is required';
 
-    /**
-     * REQUIRED -- set in environment.js
-     * @param host
-     * @param port
-     */
-    self.init = function(host, port) {
-        _host = host;
-        _port = port;
-        _baseURL = "http://"+host;
-        if (port !== 80) {
-            _baseURL += ":"+port;
-        }
-        console.log('HttpClient '+host+" "+port);
-    };
+  this.host = host;
+  this.port = parseInt(port);
+  this.protocol = protocol || 'http';
 
-    /**
-     *
-     * @param path e.g. /tm/
-     * @param queryJSON
-     * @param callback
-     */
-    self.post = function(path, queryJSON, callback) {
-        var content = encodeURIComponent(JSON.stringify(queryJSON));
-        console.log("POST "+content);
-        var urx = _baseURL+path+content;
-        var err,
-            body='',
-            result;
-        var request = post(urx,{}, function hra(response) {
-            console.log('STATUS: ' + response.statusCode);
-            response.setEncoding('utf8');
-            response.on('data', function(chunk){
-                body += chunk;
-            });
+  if (this.port === NaN) {
+    this.port = (this.protocol === 'https' ? 443 : 80)
+  }
+  this.baseURL = this.protocol + '://' + this.host + ':' + this.port;
 
-            response.on('end', function(){
-                console.log("HTTP-POST "+body);
-                result = JSON.parse(body);
-                return callback(err, result);
-            });
-
-         }).on('error', function(e) {
-            console.log('problem with request: ' + e.message);
-            return callback(err, result);
-        });
-    };
-
-    /**
-     *
-     * @param path e.g. /tm/
-     * @param queryJSON
-     * @param callback signature (err, rslt)
-     */
-    self.get = function(path, queryJSON, callback) {
-        var content = encodeURIComponent(JSON.stringify(queryJSON));
-        var urx = _baseURL+path+content;
-        var err,
-            body='',
-            result;
-        var request = http.get(urx, function hra(response) {
-            console.log('STATUS: ' + response.statusCode);
-            response.setEncoding('utf8');
-            response.on('data', function(chunk){
-                body += chunk;
-            });
-
-            response.on('end', function(){
-                result = JSON.parse(body);
-                return callback(err, result);
-            });
-        }).on('error', function(e){
-            console.log("Got an error: ", e);
-            return callback(e, result);
-        });
-    };
-    /////////////////////////////////////
-    // Structure of authentication
-    //{
-    //  "host": "localhost",
-    //  "port": "8080",
-    //  "path": "/auth/{\"verb\":\"Auth\",\"uIP\":\"\",\"uName\":\"SystemUser\",\"sToken\":\"\"}",
-    //  "headers": {
-    //    "Authorization": "Basic YnJ5YW5Aam9lLm9yZzpicnlhbg=="
-    //  }
-    //}
-    /////////////////////////////////////
-    /**
-     * @see http://stackoverflow.com/questions/3905126/how-to-use-http-client-in-node-js-if-there-is-basic-authorization
-     * @param query
-     * @param email
-     * @param password
-     * @param callback
-     */
-    self.authenticate = function(query, email, password, callback) {
-        var auth = email+':'+password,
-            options = {};
-        var headers = {};
-        headers.Authorization = 'Basic ' + new Buffer(auth).toString('base64')
-        options.host = _host;
-        options.port = _port;
-        options.path = '/auth/'+JSON.stringify(query);
-        options.headers = headers;
-        console.log("AUTH- "+JSON.stringify(options));
-        var err,
-            result;
-        var request = http.get(options, function hra(response) {
-            console.log('STATUS: ' + response.statusCode);
-            console.log('HEADERS: ' + JSON.stringify(response.headers));
-            response.setEncoding('utf8');
-            response.on('data', function (chunk) {
-                result = JSON.parse(chunk);
-                console.log("CARGO "+result.cargo);
-                console.log('BODY: ' + JSON.stringify(result));
-///////////////////////////////////
-//BODY: "{\"rMsg\":\"ok\",\"rToken\":\"8623f637-4275-46de-b8bb-c35127797e60\",\"cargo\":
-// {\"uGeoloc\":\"|\",\"uEmail\":\"sam@slow.com\",\"uHomepage\":\"\",\"uName\
-// ":\"sam\",\"uFullName\":\"Sam Slow\",\"uRole\":\"rur\",\"uAvatar\":\"\"}}"
-///////////////////////////////////
-
-                request.end();
-                console.log("HttpRequestAuth "+result);
-                return callback(err, result);
-
-            });
-
-        });
-    };
+  console.log('HttpClient', this.baseURL);
 };
 
-module.exports = HttpClient;
+/**
+ *
+ * @param path e.g. /tm/
+ * @param queryJSON
+ * @param callback signature (err, rslt)
+ */
+HttpClient.prototype.get = function (path, queryJSON, callback) {
+  console.log('GET', prettyPrint(queryJSON));
+  request.get({
+    url: this.baseURL + path + encode(queryJSON),
+    json: true
+  }, function hra(err, response, body) {
+    if (err) console.log('ERR', err);
+    console.log('HTTP-GET', prettyPrint(body));
+    return callback(err, body);
+  });
+};
+
+/**
+ * @param path e.g. /tm/
+ * @param queryJSON
+ * @param callback
+ */
+HttpClient.prototype.post = function (path, queryJSON, callback) {
+  console.log('POST', prettyPrint(queryJSON));
+  request.post({
+    url: this.baseURL + path + encode(queryJSON),
+    json: true
+  }, function hra(err, response, body) {
+    if (err) console.log('ERR', err);
+    console.log('HTTP-POST', prettyPrint(body));
+    return callback(err, body);
+  });
+};
+
+/////////////////////////////////////
+// Structure of authentication
+// {
+//   "host": "localhost",
+//   "port": "8080",
+//   "path": "/auth/{\"verb\":\"Auth\",\"uIP\":\"\",\"uName\":\"SystemUser\",\"sToken\":\"\"}",
+//   "headers": {
+//     "Authorization": "Basic YnJ5YW5Aam9lLm9yZzpicnlhbg=="
+//   }
+// }
+/////////////////////////////////////
+
+///////////////////////////////////
+// Structure of authentication response body
+// {
+//   "rMsg": "ok",
+//   "rToken": "8623f637-4275-46de-b8bb-c35127797e60",
+//   "cargo": {
+//     "uGeoloc": "|",
+//     "uEmail": "sam@slow.com",
+//     "uHomepage": "",
+//     "uName": "sam",
+//     "uFullName": "Sam Slow",
+//     "uRole": "rur",
+//     "uAvatar": ""
+//   }
+// }
+///////////////////////////////////
+
+/**
+* @param query
+* @param email
+* @param password
+* @param callback
+*/
+HttpClient.prototype.authenticate = function (query, email, password, callback) {
+  console.log('AUTH: ', email, prettyPrint(query));
+  request({
+    url: this.protocol + '://' + email + ':' + password + '@' + this.host + ':' + this.port + '/auth/' + encode(query),
+    json: true
+  }, function hra(err, response, body) {
+    if (err) console.log('ERR', err);
+    console.log('HEADERS', prettyPrint(response.headers));
+    console.log('HttpRequestAuth', prettyPrint(body));
+    return callback(err, body);
+  });
+}
+
+function encode(query) {
+  return encodeURIComponent(JSON.stringify(query));
+}
+
+function prettyPrint(json) {
+  return JSON.stringify(json, null, 2);
+}

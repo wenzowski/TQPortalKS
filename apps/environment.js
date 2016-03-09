@@ -16,7 +16,7 @@ var Req = require("./models/drivers/http_request"),
     Wiki = require("./models/wiki_model"),
     Tdrvr = require("./models/drivers/topic_driver"),
     Udrvr = require("./models/drivers/user_driver"),
-    fs = require("fs"),
+    configProperties = require("../config/config.json"),
 //TODO defaults will be replaced by config.json values
     defaults = {
         server: {
@@ -27,7 +27,6 @@ var Req = require("./models/drivers/http_request"),
 
 var Environment = function() {
      var self = this,
-         configProperties,
          httpClient,
          commonModel,
          adminModel,
@@ -55,35 +54,28 @@ var Environment = function() {
      *
      * @param callback signature err
      */
-    self.init = function(callback) {
+    self.init = function() {
         console.log("Environment initializing");
-        var path = __dirname+"/../config/config.json";
-        //read the config file
-         //boot in order of need
-        httpClient = new Req(defaults);
-        topicDriver = new Tdrvr(this);
-        userDriver = new Udrvr(this);
+        console.log('CONFIG '+JSON.stringify(configProperties));
+        //boot in order of need
+        //configure HttpClient to talk to BacksideServlet
+        httpClient = new Req(configProperties.backsideHost, configProperties.backsidePort, configProperties.backsideProtocol);
+        topicDriver = new Tdrvr(self);
+        userDriver = new Udrvr(self);
         //have drivers, now app models
-        commonModel = new Common(this);
-        adminModel = new Admin(this);
-        blogModel = new Blog(this);
-        bookmarkModel = new Bm(this);
-        conversationModel = new Conver(this);
-        kanbanModel = new Kan(this);
-        tagModel = new Tag(this);
-        userModel = new Usr(this);
-        wikiModel = new Wiki(this);
-        searchModel = new Srch(this);
-        fs.readFile(path, function environmentReadConfig(err, configfile) {
-            configProperties = JSON.parse(configfile);
-            console.log("CONFIG "+JSON.stringify(configProperties));
-            //configure HttpClient to talk to BacksideServlet
-            httpClient.init(configProperties.backsideHost, configProperties.backsidePort);
-            backsideURL = "http://"+configProperties.backsideHost+":"+configProperties.backsidePort+"/";
-            isInvitationOnly = configProperties.invitationOnly;
-            return callback(err);
-        });
-
+        commonModel = new Common(self);
+        adminModel = new Admin(self);
+        blogModel = new Blog(self);
+        bookmarkModel = new Bm(self);
+        conversationModel = new Conver(self);
+        kanbanModel = new Kan(self);
+        tagModel = new Tag(self);
+        userModel = new Usr(self);
+        wikiModel = new Wiki(self);
+        searchModel = new Srch(self);
+        backsideURL = configProperties.backsideProtocol+'://'+configProperties.backsideHost+':'+configProperties.backsidePort+'/';
+        isInvitationOnly = configProperties.invitationOnly;
+        console.log("Environment initialized");
     };
 
     //////////////////////
