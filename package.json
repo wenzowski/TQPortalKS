@@ -17,7 +17,7 @@
     "request": "~2.66.0",
     "express-session": "~1.12.1",
     "node-uuid": "~1.4.7",
-    "http-post": "~0.1.1",
+    "request": "~2.66.0",
     "chiasm": "~0.2.3"
   }
 }
