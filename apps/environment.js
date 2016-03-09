@@ -76,12 +76,10 @@ var Environment = function() {
         searchModel = new Srch(this);
         fs.readFile(path, function environmentReadConfig(err, configfile) {
             configProperties = JSON.parse(configfile);
-            configProperties.backsideHost = process.env.BACKSIDE_HOST || configProperties.backsideHost;
-            configProperties.backsidePort = process.env.BACKSIDE_PORT || configProperties.backsidePort;
             console.log('CONFIG '+JSON.stringify(configProperties));
             //configure HttpClient to talk to BacksideServlet
             httpClient.init(configProperties.backsideHost, configProperties.backsidePort);
-            backsideURL = 'http://'+configProperties.backsideHost+':'+configProperties.backsidePort+'/';
+            backsideURL = process.env.BACKSIDE_URL || 'http://'+configProperties.backsideHost+':'+configProperties.backsidePort+'/';
             isInvitationOnly = configProperties.invitationOnly;
             return callback(err);
         });
