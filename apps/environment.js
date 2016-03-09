@@ -17,6 +17,7 @@ var Req = require('./models/drivers/http_request'),
     Tdrvr = require('./models/drivers/topic_driver'),
     Udrvr = require('./models/drivers/user_driver'),
     fs = require('fs'),
+    url = require('url'),
 //TODO defaults will be replaced by config.json values
     defaults = {
         server: {
@@ -76,10 +77,16 @@ var Environment = function() {
         searchModel = new Srch(this);
         fs.readFile(path, function environmentReadConfig(err, configfile) {
             configProperties = JSON.parse(configfile);
+            if (process.env.BACKSIDE_URL) {
+              var backside = url.parse(process.env.BACKSIDE_URL);
+              configProperties.backsideHost = backside.hostname;
+              configProperties.backsidePort = backside.port || (backside.protocol === 'https:' ? 443 : 80);
+              configProperties.backsideProtocol = backside.protocol.slice(0, -1);
+            }
             console.log('CONFIG '+JSON.stringify(configProperties));
             //configure HttpClient to talk to BacksideServlet
-            httpClient.init(configProperties.backsideHost, configProperties.backsidePort);
-            backsideURL = process.env.BACKSIDE_URL || 'http://'+configProperties.backsideHost+':'+configProperties.backsidePort+'/';
+            httpClient.init(configProperties.backsideHost, configProperties.backsidePort, configProperties.backsideProtocol);
+            backsideURL = configProperties.backsideProtocol+'://'+configProperties.backsideHost+':'+configProperties.backsidePort+'/';
             isInvitationOnly = configProperties.invitationOnly;
             return callback(err);
         });

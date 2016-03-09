@@ -17,10 +17,11 @@ var HttpClient = function() {
      * @param host
      * @param port
      */
-    self.init = function(host, port) {
+    self.init = function(host, port, protocol) {
         _host = host;
         _port = port;
-        _baseURL = "http://"+host;
+        _protocol = protocol || 'http';
+        _baseURL = _protocol+"://"+host;
         if (port !== 80) {
             _baseURL += ":"+port;
         }
