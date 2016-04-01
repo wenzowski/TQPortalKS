@@ -5,5 +5,5 @@
   "portalIsPrivate": false,
   "invitationOnly": true,
   "backsideHost" : "localhost",
-  "backsidePort" : "8080"
+  "backsidePort" : "8888"
 }
