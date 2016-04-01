@@ -37,7 +37,7 @@ function HttpClient(host, port, protocol) {
  * @param callback signature (err, rslt)
  */
 HttpClient.prototype.get = function (path, queryJSON, callback) {
-  console.log('GET', prettyPrint(queryJSON));
+  console.log('GET', path, prettyPrint(queryJSON));
   request.get({
     url: this.baseURL + path + JSON.stringify(queryJSON),
     json: true
@@ -54,7 +54,7 @@ HttpClient.prototype.get = function (path, queryJSON, callback) {
  * @param callback
  */
 HttpClient.prototype.post = function (path, queryJSON, callback) {
-  console.log('POST', prettyPrint(queryJSON));
+  console.log('POST', path, prettyPrint(queryJSON));
   request.post({
     url: this.baseURL + path + JSON.stringify(queryJSON),
     json: true
@@ -101,7 +101,7 @@ HttpClient.prototype.post = function (path, queryJSON, callback) {
 * @param callback
 */
 HttpClient.prototype.authenticate = function (query, email, password, callback) {
-  console.log('AUTH: ', email, prettyPrint(query));
+  console.log('AUTH: ', email, password, prettyPrint(query));
   request({
     url: this.protocol + '://' + email + ':' + password + '@' + this.host + ':' + this.port + '/auth/' + JSON.stringify(query),
     json: true
