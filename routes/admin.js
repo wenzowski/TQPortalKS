@@ -1,40 +1,13 @@
 /**
  * Created by park on 11/17/2015.
  */
-var Constants = require('../apps/constants');
+var Constants = require("../apps/constants"),
+    Help = require("./helpers/helpers");
 
 exports.plugin = function(app, environment) {
-    var self = this,
-        isPrivatePortal = environment.getIsPrivatePortal(),
+    var helpers = new Help(environment),
         AdminModel = environment.getAdminModel();
     console.log("Admin "+AdminModel);
-
-
-    function isAdmin(req, res, next) {
-        var theUser = req.session[Constants.THE_USER];
-        console.log("ADMINUSER "+theUser);
-        if (theUser) {
-            var roles = theUser.uRole;
-            var where = roles.indexOf(Constants.ADMIN_CREDENTIALS);
-            console.log("ADMINROLES "+roles+" "+where);
-            if (where > -1) {
-                return next();
-            } else {
-                return res.redirect('/');
-            }
-        } else {
-            return res.redirect('/');
-        }
-    };
-
-    function isPrivate(req, res, next) {
-        if (isPrivatePortal) {
-            if (req.isAuthenticated()) {return next();}
-            return res.redirect('/login');
-        } else {
-            return next();
-        }
-    };
 
     function finishAuthenticate(req, jsonUser) {
         console.log("AA "+JSON.stringify(jsonUser));
@@ -74,22 +47,11 @@ exports.plugin = function(app, environment) {
         environment.setIsAdmin(false);
         environment.setUserEmail("");
     };
-
-    function isLoggedIn(req, res, next) {
-        if (environment.getIsAuthenticated()) {return next();}
-        // if they aren't redirect them to the home page
-        // really should issue an error message
-        if (isPrivatePortal) {
-            return res.redirect('/login');
-        }
-        return res.redirect('/');
-    };
-
     /////////////
     // Routes
     /////////////
 
-    app.get('/profile/:ID', function (req, res) {
+    app.get("/profile/:ID", function (req, res) {
         var email = req.session[Constants.USER_EMAIL],
             data = environment.getCoreUIData();
         AdminModel.getUser(email, function ap(err, result) {
@@ -107,19 +69,19 @@ exports.plugin = function(app, environment) {
             //":"jackpark","uFullName":"Jack Park","uRole":"rur, rar","uAvatar":""}
             if (cargo) {
                 data.homepage = cargo.uHomepage;
-                var lat = '',
-                    lng = '';
+                var lat = "",
+                    lng = "";
                 var gl = cargo.uGeoloc.trim();
                 var len = gl.length;
                 if (len > 10) {
-                    var where = gl.indexOf('|');
+                    var where = gl.indexOf("|");
                     lat = gl.slice(0, where);
                     lng = gl.slice((where + 1), (len - 1));
                 }
                 data.latitude = lat;
                 data.longitude = lng;
             }
-            res.render('profile', data);
+            res.render("profile", data);
         });
 
     });
@@ -131,7 +93,7 @@ exports.plugin = function(app, environment) {
         var q = req.params.id;
         console.log("Admin.setView "+q);
         req.session.viewtype = q;
-        return res.redirect('/');
+        return res.redirect("/");
     });
 
     ///////////////////////////////
@@ -141,26 +103,26 @@ exports.plugin = function(app, environment) {
     /**
      * GET LogOut
      */
-    app.get('/logout', function(req, res) {
+    app.get("/logout", function(req, res) {
         req.session.clipboard = "";
         AdminModel.logout(req.session[Constants.SESSION_TOKEN], function adminLogout(err, rslt) {
             finishLogout(req);
-            return res.redirect('/');
+            return res.redirect("/");
         });
     });
 
     /**
      * GET LogIn
      */
-    app.get('/login', function(req, res) {
-        res.render('login', environment.getCoreUIData());
+    app.get("/login", function(req, res) {
+        res.render("login", environment.getCoreUIData());
     });
 
     /**
      * POST LogIn
      */
-    app.post('/login', function(req, res, next) {
-        console.log('Login: '+req.body.email);
+    app.post("/login", function(req, res, next) {
+        console.log("Login: "+req.body.email);
         AdminModel.login(req, function adminLogin(err, rslt) {
             console.log("LOGIN+ "+err+" "+JSON.stringify(rslt));
 ///////////////////////////////
@@ -173,28 +135,28 @@ exports.plugin = function(app, environment) {
 
             if (rslt.rToken === "") {
                 //not successful
-                return res.redirect('/login')
+                return res.redirect("/login")
             } else {
                 finishAuthenticate(req, rslt);
                 console.log("SESS "+req.session[Constants.USER_EMAIL]);
             }
-            return res.render('index', environment.getCoreUIData());
+            return res.render("index", environment.getCoreUIData());
         });
      });
 
     /**
      * GET SignUp
      */
-    app.get('/signup', function(req, res){
+    app.get("/signup", function(req, res){
         var data = environment.getCoreUIData(req);
         data.invitationOnly = environment.getIsInvitationOnly();
-        return res.render('signup', data);
+        return res.render("signup", data);
     });
 
     /**
      * POST Validate
      */
-    app.post('/validate', function(req, res) {
+    app.post("/validate", function(req, res) {
         var handle = req.body.vhandle;
         console.log("Validating "+handle);
         AdminModel.handleUnique(handle, function(err,truth) {
@@ -202,7 +164,7 @@ exports.plugin = function(app, environment) {
             var data = environment.getCoreUIData(req);
             data.invitationOnly = isInvitationOnly;
             if (truth) {data.hndl = handle;}
-            return res.render('signup', data);
+            return res.render("signup", data);
         });
     });
 
@@ -218,18 +180,18 @@ exports.plugin = function(app, environment) {
             if (!err) {
                 AdminModel.removeInvitation(email, function adminRemove(err, truth) {
                     console.log("Admin.signup-4 ");
-                    return res.redirect('/');
+                    return res.redirect("/");
                 });
             } else {
                 //TODO deal with error
-                return res.redirect('/'); // for now
+                return res.redirect("/"); // for now
             }
         });
     };
     /**
      * POST SignUp
      */
-    app.post('/signup', function(req, res) {
+    app.post("/signup", function(req, res) {
         var isInvitationOnly = environment.getIsInvitationOnly(),
             email = req.body.email;
         console.log("Admin.signup "+isInvitationOnly+" "+email);
@@ -239,11 +201,11 @@ exports.plugin = function(app, environment) {
                 // bad:  {"rMsg":"not found","rToken":""}
                 // good: {"rMsg":"ok","rToken":""}
                 var msg = truth.rMsg;
-                if (msg === 'ok') {
+                if (msg === "ok") {
                     return doPostSignup(req, res);
                  } else {
                     console.log("Admin.signup-3 ");
-                    return res.redirect('/');
+                    return res.redirect("/");
                 }
             });
         } else {
@@ -252,41 +214,41 @@ exports.plugin = function(app, environment) {
         }
     });
 
-    app.get('/inviteuser', isAdmin, function(req, res) {
-        return res.render('inviteuser',environment.getCoreUIData(req));
+    app.get("/inviteuser", helpers.isAdmin, function(req, res) {
+        return res.render("inviteuser",environment.getCoreUIData(req));
     });
 
-    app.post('/inviteuser', isAdmin, function(req,res) {
+    app.post("/inviteuser", helpers.isAdmin, function(req,res) {
         var email = req.body.email;
         console.log("ABC " + JSON.stringify(req.body));
         console.log("DEF " + JSON.stringify(req.query));
         AdminModel.addInvitation(email, function (err, data) {
             console.log("Admin.inviteUser " + email + " " + err + " " + data);
-            return res.redirect('/admin');
+            return res.redirect("/admin");
         });
     });
 
-    app.get('/listusers', isAdmin, function(req, res) {
+    app.get("/listusers", helpers.isAdmin, function(req, res) {
         //TODO this needs to do paging
         AdminModel.fillUserDatatable(0, 50, function adminListUsers(err, json) {
             console.log("AdminModel.listUsers "+json);
             var data = environment.getCoreUIData(req);
             data.usrtable = json.cargo;
-            res.render('listusers',data);
+            res.render("listusers",data);
         });
     });
 
-    app.get('/listinvites', isAdmin, function(req, res) {
+    app.get("/listinvites", helpers.isAdmin, function(req, res) {
         AdminModel.fillInviteTable(0, 50, function adminListUsers(err, json) {
             console.log("AdminModel.listInvites "+json);
             var data = environment.getCoreUIData(req);
             data.usrtable = json;
-            res.render('listinvites',data);
+            res.render("listinvites",data);
         });
 
     });
 
-    app.get('/selectuser', isAdmin, function(req, res) {
+    app.get("/selectuser", helpers.isAdmin, function(req, res) {
         var email = req.query.email;
         console.log("Admin.selectuser "+email);
         AdminModel.getUser(email, function(err, data) {
@@ -295,76 +257,76 @@ exports.plugin = function(app, environment) {
             var d = environment.getCoreUIData(req)
             d.name = data.cargo.uName;
             d.credentials = data.cargo.uRole;
-            res.render('editcredentials',d);
+            res.render("editcredentials",d);
         });
 
     });
 
-    app.get('/removeuser', isAdmin, function(req,res) {
+    app.get("/removeuser", helpers.isAdmin, function(req,res) {
         var userId = req.query.handle;
         console.log("Admin.selectuser "+userId);
         AdminModel.removeUser(userId, function(err,data) {
-            res.redirect('/admin');
+            res.redirect("/admin");
         });
 
     });
 
-    app.post('/editcredentials', isAdmin, function(req,res) {
+    app.post("/editcredentials", helpers.isAdmin, function(req,res) {
         var userId = req.body.name;
         var creds = req.body.credentials;
-        var ic = creds.split(',');
+        var ic = creds.split(",");
         var nc = [];
         for (var i=0;i<ic.length;i++) {
             nc.push(ic[i].trim());
         }
 
-        console.log('Admin,editcredentials '+userId+" "+nc);
+        console.log("Admin,editcredentials "+userId+" "+nc);
         AdminModel.updateUserRole(userId, creds, function aUur(err, data) {
-            console.log('Admin,editcredentials-1 '+err);
-            return res.redirect('/admin');
+            console.log("Admin,editcredentials-1 "+err);
+            return res.redirect("/admin");
         });
     });
     ///////////////////////////////
     // Profile functions
     ///////////////////////////////
 
-    app.post('/changeEmail', isLoggedIn, function(req, res) {
+    app.post("/changeEmail", helpers.isLoggedIn, function(req, res) {
         var userId = req.session[Constants.USER_ID],
             newEmail = email;
         AdminModel.updateUserEmail(userId, newEmail, function aUe(err, rslt) {
-            return res.redirect('/');
+            return res.redirect("/");
         });
     });
 
-    app.post("/changeHomepage", isLoggedIn, function(req, res) {
+    app.post("/changeHomepage", helpers.isLoggedIn, function(req, res) {
         console.log("CHANGE HOMEPAGE");
-        return res.redirect('/');
+        return res.redirect("/");
     });
 
-    app.post("/changeGeoLoc", isLoggedIn, function(req, res) {
+    app.post("/changeGeoLoc", helpers.isLoggedIn, function(req, res) {
         console.log("CHANGE GEOLOC");
-        return res.redirect('/');
+        return res.redirect("/");
     });
 
-    app.post("/changePwd", isLoggedIn, function(req, res) {
+    app.post("/changePwd", helpers.isLoggedIn, function(req, res) {
         console.log("CHANGE PASSWORD");
-        return res.redirect('/');
+        return res.redirect("/");
     });
 
     ///////////////////////////////
     // Admin functions
     ///////////////////////////////
-    app.get('/admin', isAdmin, function(req, res) {
+    app.get("/admin", helpers.isAdmin, function(req, res) {
         console.log("FIRING ADMIN");
-        res.render('admin',environment.getCoreUIData(req));
+        res.render("admin",environment.getCoreUIData(req));
     });
-    app.get('/admin/setmessage', isAdmin, function(req,res) {
+    app.get("/admin/setmessage", helpers.isAdmin, function(req,res) {
         var msg = req.query.message;
         environment.setMessage(msg);
-        res.redirect('/admin');
+        res.redirect("/admin");
     });
-    app.get('/clearmessage', isAdmin, function(req,res) {
+    app.get("/clearmessage", helpers.isAdmin, function(req,res) {
         environment.clearMessage();
-        res.redirect('/admin');
+        res.redirect("/admin");
     });
 };

@@ -1,15 +1,19 @@
 /**
  * Created by park on 11/26/2015.
  */
+var Help = require("./helpers/helpers");
+
 exports.plugin = function(app, environment) {
+    var helpers = new Help(environment);
     /////////////////
     // Menu
     /////////////////
     environment.addApplicationToMenu("/geomap","GeoMap");
+
     /////////////////
     // router
     /////////////////
-    app.get("/geomap", function geoMapGet(req, res) {
+    app.get("/geomap", helpers.isPrivate, function geoMapGet(req, res) {
         var data = environment.getCoreUIData();
         //NOTE, we can create a GeoMap model to control map initialization;
         // here we hard wire some values

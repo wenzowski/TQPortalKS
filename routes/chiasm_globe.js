@@ -1,19 +1,10 @@
 /**
- * Created by Admin on 11/29/2015.
+ * Created by park on 11/29/2015.
  */
+var Help = require("./helpers/helpers");
 
 exports.plugin = function(app, environment) {
-    var self = this
-        isPrivatePortal = environment.getIsPrivatePortal();
-
-    function isPrivate(req, res, next) {
-        if (isPrivatePortal) {
-            if (req.isAuthenticated()) {return next();}
-            return res.redirect('/login');
-        } else {
-            return next();
-        }
-    };
+    var helpers = new Help(environment);
 
     /////////////
     // Menu
@@ -23,13 +14,10 @@ exports.plugin = function(app, environment) {
     // Routes
     /////////////
 
-    /**
-     * Initial fetch of the /blog landing page
-     */
-    app.get('/globe', isPrivate, function(req, res) {
+    app.get("/globe", helpers.isPrivate, function(req, res) {
         var data = environment.getCoreUIData();
 
-        res.render('globe' , data);
+        res.render("globe" , data);
     });
 
 };

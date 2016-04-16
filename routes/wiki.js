@@ -1,46 +1,15 @@
 /**
  * Created by park on 11/26/2015.
  */
-var Constants = require('../apps/constants');
+var Constants = require("../apps/constants"),
+    Help = require("./helpers/helpers");
+
 exports.plugin = function(app, environment) {
-    var self = this,
+    var helpers = new Help(environment),
         isPrivatePortal = environment.getIsPrivatePortal(),
         WikiModel = environment.getWikiModel(),
         CommonModel = environment.getCommonModel();
     console.log("Wiki " + WikiModel);
-
-    function isPrivate(req, res, next) {
-        if (isPrivatePortal) {
-            if (req.isAuthenticated()) {
-                return next();
-            }
-            return res.redirect('/login');
-        } else {
-            return next();
-        }
-    };
-    function isLoggedIn(req, res, next) {
-        // if user is authenticated in the session, carry on
-        return next();
-        /*       console.log('ISLOGGED IN '+req.isAuthenticated());
-         if (req.isAuthenticated()) {return next();}
-         // if they aren't redirect them to the home page
-         // really should issue an error message
-         if (isPrivatePortal) {
-         return res.redirect('/login');
-         }
-         return res.redirect('/'); */
-        sd
-    };
-
-    function getUser(req) {
-        var result = req.session[Constants.THE_USER];
-        if (!result) {
-            result = {};
-            result.uName = Constants.GUEST_USER;
-        }
-        return result;
-    };
 
     /////////////
     // Menu
@@ -53,45 +22,45 @@ exports.plugin = function(app, environment) {
     /**
      * Initial fetch of the /blog landing page
      */
-    app.get('/wiki', isPrivate, function (req, res) {
-        res.render('wikiindex', environment.getCoreUIData());
+    app.get("/wiki", helpers.isPrivate, function (req, res) {
+        res.render("wikiindex", environment.getCoreUIData());
     });
 
     /**
      * GET blog index
      */
-    app.get("/wiki/index", isPrivate, function (req, res) {
-        var start = parseInt(req.query.start);
-        var count = parseInt(req.query.count);
-        var userId = '';
-        var userIP = '';
-        var sToken = null;
+    app.get("/wiki/index", helpers.isPrivate, function (req, res) {
+        var start = parseInt(req.query.start),
+            count = parseInt(req.query.count),
+            userId = "",
+            userIP = "",
+            sToken = null;
         if (req.user) {
             credentials = req.user.credentials;
         }
 
         WikiModel.fillDatatable(start, count, userId, userIP, sToken, function blogFill(data, countsent, totalavailable) {
             console.log("Wiki.index " + data);
-            var cursor = start + countsent;
-            var json = environment.getCoreUIData();
+            var cursor = start + countsent,
+                json = environment.getCoreUIData();
             //pagination is based on start and count
             //both values are maintained in an html div
             json.start = cursor;
             json.count = Constants.MAX_HIT_COUNT; //pagination size
             json.total = totalavailable;
             json.table = data;
-            return res.render('wikiindex', json);
+            return res.render("wikiindex", json);
         });
     });
 
-    app.get('/wiki/:id', isPrivate, function(req, res) {
+    app.get("/wiki/:id", helpers.isPrivate, function(req, res) {
         var q = req.params.id,
             contextLocator = req.query.contextLocator;
         console.log("GETWIKI"+q);
         if (q) {
             var userId = req.session[Constants.USER_ID],
-                userIP = '',
-                theUser = getUser(req),
+                userIP = "",
+                theUser = helpers.getUser(req),
                 sToken = req.session[Constants.SESSION_TOKEN];
             CommonModel.fetchTopic(q, userId, userIP, sToken, function bFT(err, rslt) {
                 var data =  environment.getCoreUIData();
@@ -105,7 +74,7 @@ exports.plugin = function(app, environment) {
                 } else {
                     data.context = q; // we are talking about responding to this blog
                 }
-                return res.render('topic', data);
+                return res.render("topic", data);
             });
         } else {
             //That's not good!
@@ -115,40 +84,41 @@ exports.plugin = function(app, environment) {
     /**
      * GET new wiki post form
      */
-    app.get('/wiki/new', isLoggedIn, function (req, res) {
+    app.get("/wiki/new", helpers.isLoggedIn, function (req, res) {
         var data = environment.getCoreUIData(req);
         data.formtitle = "New Wiki Topic";
         data.isNotEdit = true;
-        return res.render('blogform', data); //,
+        data.action = "/wiki/new";
+        return res.render("blogwikiform", data);
     });
 
     /**
      * Function which ties the app-embedded route back to here
      */
-    var _blogsupport = function (body, usx, callback) {
+    var _wikisupport = function (body, usx, callback) {
         if (body.locator === "") {
             WikiModel.createWikiTopic(body, usx, function (err, result) {
                 return callback(err, result);
             });
         } else {
-            BlogModel.update(body, usx, function (err, result) {
+            WikiModel.update(body, usx, function (err, result) {
                 return callback(err, result);
             });
         }
     };
 
     /**
-     * POST new blog post
+     * POST new wiki topio
      */
-    app.post('/wiki', isLoggedIn, function (req, res) {
-        var body = req.body;
-        var usx = req.user;
-        console.log('WIKI_NEW_POST ' + JSON.stringify(usx) + ' | ' + JSON.stringify(body));
-        _blogsupport(body, usx, function (err, result) {
-            console.log('WIKI_NEW_POST-1 ' + err + ' ' + result);
+    app.post("/wiki/new", helpers.isLoggedIn, function (req, res) {
+        var body = req.body,
+            usx = req.user;
+        console.log("WIKI_NEW_POST " + JSON.stringify(usx) + " | " + JSON.stringify(body));
+        _wikisupport(body, usx, function (err, result) {
+            console.log("WIKI_NEW_POST-1 " + err + " " + result);
             //technically, this should return to "/" since Lucene is not ready to display
             // the new post; you have to refresh the page in any case
-            return res.redirect('/blog');
+            return res.redirect("/wiki");
         });
     });
 };

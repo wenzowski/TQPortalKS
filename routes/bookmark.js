@@ -2,33 +2,24 @@
  * Created by park on 12/31/2015.
  */
 
-var Constants = require('../apps/constants');
+var Constants = require("../apps/constants"),
+    Help = require("./helpers/helpers");
 
 exports.plugin = function(app, environment) {
-    var self = this,
-        isPrivatePortal = environment.getIsPrivatePortal(),
+    var helpers = new Help(environment),
         BookmarkModel = environment.getBookmarkModel(),
         CommonModel = environment.getCommonModel();
 
     console.log("Bookmark "+BookmarkModel);
-
-    function isPrivate(req, res, next) {
-        if (isPrivatePortal) {
-            if (req.isAuthenticated()) {return next();}
-            return res.redirect('/login');
-        } else {
-            return next();
-        }
-    };
 
     function isLoggedIn(req, res, next) {
         if (environment.getIsAuthenticated()) {return next();}
         // if they aren't redirect them to the home page
         // really should issue an error message
         if (isPrivatePortal) {
-            return res.redirect('/login');
+            return res.redirect("/login");
         }
-        return res.redirect('/');
+        return res.redirect("/");
     };
 
     function getUser(req) {
@@ -49,19 +40,13 @@ exports.plugin = function(app, environment) {
     // Bookmarklet
     // javascript:location.href='http://localhost:3000/bookmarknew?url='+
     //     encodeURIComponent(location.href)+'&title='+ encodeURIComponent(document.title)
-    /**
-     * Initial fetch of the /blog landing page
-     */
-    //  app.get('/blog', isPrivate, function(req, res) {
-    //       res.redirect('blogindex');
-    //   });
 
     /**
      * GET blog index
      */
-    app.get("/bookmark", isPrivate, function(req, res) {
-        var start = parseInt(req.query.start);
-        var count = parseInt(req.query.count);
+    app.get("/bookmark", helpers.isPrivate, function(req, res) {
+        var start = parseInt(req.query.start),
+            count = parseInt(req.query.count);
         if (!start) {
             start = 0;
         }
@@ -70,33 +55,33 @@ exports.plugin = function(app, environment) {
         }
         console.log("Bookmark "+start+" "+count);
 
-        var userId= '';
-        var userIP= '';
-        var sToken= null;
+        var userId= "",
+            userIP= "",
+            sToken= null;
         if (req.user) {credentials = req.user.credentials;}
 
         BookmarkModel.fillDatatable(start, count, userId, userIP, sToken, function blogFill(err, data, countsent, totalavailable) {
             console.log("Bookmark.index "+data);
-            var cursor = start+countsent;
-            var json = environment.getCoreUIData();
+            var cursor = start+countsent,
+                json = environment.getCoreUIData();
             //pagination is based on start and count
             //both values are maintained in an html div
             json.start = cursor;
             json.count = Constants.MAX_HIT_COUNT; //pagination size
             json.total = totalavailable;
             json.cargo = data.cargo;
-            return res.render('bookmarkindex', json);
+            return res.render("bookmarkindex", json);
         });
     });
 
-    app.get('/bookmark/:id', isPrivate, function(req, res) {
+    app.get("/bookmark/:id", helpers.isPrivate, function(req, res) {
         var q = req.params.id,
             contextLocator = req.query.contextLocator;
         console.log("GETBLOG "+q);
         if (q) {
             var userId = req.session[Constants.USER_ID],
                 theUser = getUser(req),
-                userIP = '',
+                userIP = "",
                 sToken = req.session[Constants.SESSION_TOKEN];
             CommonModel.fetchTopic(q, userId, userIP, sToken, function bFT(err, rslt) {
                 var data =  environment.getCoreUIData();
@@ -109,7 +94,7 @@ exports.plugin = function(app, environment) {
                 } else {
                     data.context = q; // we are talking about responding to this blog
                 }
-                return res.render('ctopic', data);
+                return res.render("ctopic", data);
             });
         } else {
             //That's not good!
@@ -120,19 +105,19 @@ exports.plugin = function(app, environment) {
      * GET new blog post form
      * WE GET HERE FROM A BOOKMARKLET
      */
-    app.get('/bookmarknew', isLoggedIn, function(req, res) {
+    app.get("/bookmarknew", helpers.isLoggedIn, function(req, res) {
         var query = req.query,
             data =  environment.getCoreUIData(req);
         data.formtitle = "New Bookmark";
         data.isNotEdit = true;
         data.url = query.url;
         data.title = query.title;
-        data.action = '/bookmark/new';
+        data.action = "/bookmark/new";
         console.log("BM "+data.url);
-        return res.render('blogwikiform', data); //,
+        return res.render("blogwikiform", data); //,
     });
 
-    app.get('bookmarkedit', isLoggedIn, function(req, res) {
+    app.get("/bookmarkedit", helpers.isLoggedIn, function(req, res) {
         //TODO
     });
 
@@ -154,21 +139,21 @@ exports.plugin = function(app, environment) {
     /**
      * POST new blog post
      */
-    app.post('/bookmark/new', isLoggedIn, function(req, res) {
+    app.post("/bookmark/new", helpers.isLoggedIn, function(req, res) {
         var body = req.body,
             usx = req.session[Constants.USER_ID],
-            usp = '',
+            usp = "",
             stok = req.session[Constants.SESSION_TOKEN];
-        console.log('BOOKMARK_NEW_POST '+JSON.stringify(usx)+' | '+JSON.stringify(body));
+        console.log("BOOKMARK_NEW_POST "+JSON.stringify(usx)+" | "+JSON.stringify(body));
         _bookmarksupport(body, usx, usp, stok, function(err,result) {
-            console.log('BOOKMARK_NEW_POST-1 '+err+' '+result);
+            console.log("BOOKMARK_NEW_POST-1 "+err+" "+result);
             //technically, this should return to "/" since Lucene is not ready to display
             // the new post; you have to refresh the page in any case
-            return res.redirect('/bookmark');
+            return res.redirect("/bookmark");
         });
     });
 
-    app.post('/bookmark/edit', isLoggedIn, function(req, res) {
+    app.post("/bookmark/edit", helpers.isLoggedIn, function(req, res) {
         //TODO
     });
 };

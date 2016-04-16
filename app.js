@@ -1,74 +1,41 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-//var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var http = require('http');
-var Env = require('./apps/environment');
-var MyEnvironment = new Env();
-
-
-var routes = require('./routes/grits/index');
-var users = require('./routes/grits/users');
-
-var app = express(),
-    session = require('express-session'),
-    uuid = require('node-uuid'),
-    fs = require('fs');
+var express = require("express"),
+    path = require("path"),
+    favicon = require("serve-favicon"),
+    logger = require("morgan"),
+    flash = require("connect-flash"),
+    bodyParser = require("body-parser"),
+    http = require("http"),
+    hbs = require("express-hbs"),
+    Env = require("./apps/environment"),
+    routes = require("./routes/grits/index"),
+    app = express(),
+    session = require("express-session"),
+    uuid = require("node-uuid"),
+    fs = require("fs"),
+    viewPath = path.join(process.cwd(), "views");
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'hbs');
+app.use(flash());
+app.engine("hbs", hbs.express4({
+  defaultLayout: path.join(viewPath, "layouts", "layout"),
+  partialsDir: __dirname + "/views/partials"
+}));
+app.set("view engine", "hbs");
+app.set("views", viewPath); //path.join(__dirname, "/views"));
 
 // uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
+//app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
+app.use(logger("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 //app.use(cookieParser()); // collides with session
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, "public")));
 app.use(session({
   genid: function(req) {
     return uuid.v4(); // use UUIDs for session IDs
   },
-  secret: 'collaborative sauce'
+  secret: "collaborative sauce"
 }));
 
-/**
-app.use('/', routes);
-app.use('/users', users);
-
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
-
-// error handlers
-
-// development error handler
-// will print stacktrace
-if (app.get('env') === 'development') {
-  app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-      message: err.message,
-      error: err
-    });
-  });
-}
-
-// production error handler
-// no stacktraces leaked to user
-app.use(function(err, req, res, next) {
-  res.status(err.status || 500);
-  res.render('error', {
-    message: err.message,
-    error: {}
-  });
-});
-**/
 ////////////////////////////
 // Plugin Routing
 ////////////////////////////
@@ -76,15 +43,16 @@ app.use(function(err, req, res, next) {
 // Routes are added to Express from each plugin app
 // Trailing routes added for 404 errors
 ////////////////////////////
+var MyEnvironment = new Env();
 MyEnvironment.init(function appFcn(err) {
-  console.log('Environment initialized '+err);
+  console.log("Environment initialized "+err);
   /**
    * Fire up an individual app from this <code>file</code>
    * @param file: a .js app file which exports a function(app,database)
    */
   function startApp(file) {
     var v = file;
-    var px = require('./routes/' + v).plugin;
+    var px = require("./routes/" + v).plugin;
     px(app, MyEnvironment);
   };
 
@@ -93,25 +61,25 @@ MyEnvironment.init(function appFcn(err) {
    */
   function loadApps() {
     console.log("Server Starting-3");
-    require('fs').readdirSync('./routes').forEach(function (file) {
+    require("fs").readdirSync("./routes").forEach(function (file) {
       // only load javascript files
       if (file.indexOf(".js") > -1) {
-        console.log('BURP ' + file);
+        console.log("BURP " + file);
         startApp(file);
       }
     });
   };
-// boot the plugin apps
+  // boot the plugin apps
   loadApps();
 
-////////////////////////////
-//Server
-////////////////////////////
-// all environments
-  app.set('port', parseInt(MyEnvironment.getConfigProperties().port) || 3000);
+  ////////////////////////////
+  //Server
+  ////////////////////////////
+  // all environments
+  app.set("port", parseInt(MyEnvironment.getConfigProperties().port) || 3000);
 
-  http.createServer(app).listen(app.get('port'), function () {
-    console.log('Express server listening on port ' + app.get('port'));
+  http.createServer(app).listen(app.get("port"), function () {
+    console.log("Express server listening on port " + app.get("port"));
   });
 
 });

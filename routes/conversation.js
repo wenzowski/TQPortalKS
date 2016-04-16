@@ -4,43 +4,16 @@
  *  transclude = locator for node to transclude
  *  tevidence = locator for node to transclude as evidence
  */
-var Constants = require('../apps/constants');
+var Constants = require("../apps/constants"),
+    Help = require("./helpers/helpers");
 
 exports.plugin = function(app, environment) {
-    var self = this,
-        isPrivatePortal = environment.getIsPrivatePortal(),
+    var helpers = new Help(environment),
         ConversationModel = environment.getConversationModel(),
         CommonModel = environment.getCommonModel();
 
     console.log("Conversation "+ConversationModel);
 
-    function isPrivate(req, res, next) {
-        if (isPrivatePortal) {
-            if (req.isAuthenticated()) {return next();}
-            return res.redirect('/login');
-        } else {
-            return next();
-        }
-    };
-
-    function isLoggedIn(req, res, next) {
-        if (environment.getIsAuthenticated()) {return next();}
-        // if they aren't redirect them to the home page
-        // really should issue an error message
-        if (isPrivatePortal) {
-            return res.redirect('/login');
-        }
-        return res.redirect('/');
-    };
-
-    function getUser(req) {
-        var result = req.session[Constants.THE_USER];
-        if (!result) {
-            result = {};
-            result.uName = Constants.GUEST_USER;
-        }
-        return result;
-    };
     /////////////
     // Menu
     /////////////
@@ -50,18 +23,11 @@ exports.plugin = function(app, environment) {
     /////////////
 
     /**
-     * Initial fetch of the /blog landing page
+     * GET conversation index
      */
-    //  app.get('/blog', isPrivate, function(req, res) {
-    //       res.redirect('blogindex');
-    //   });
-
-    /**
-     * GET blog index
-     */
-    app.get("/conversation", isPrivate, function(req, res) {
-        var start = parseInt(req.query.start);
-        var count = parseInt(req.query.count);
+    app.get("/conversation", helpers.isPrivate, function(req, res) {
+        var start = parseInt(req.query.start),
+            count = parseInt(req.query.count);
         if (!start) {
             start = 0;
         }
@@ -70,33 +36,33 @@ exports.plugin = function(app, environment) {
         }
         console.log("Conversation "+start+" "+count);
 
-        var userId= '';
-        var userIP= '';
-        var sToken= null;
+        var userId= "",
+            userIP= "",
+            sToken= null;
         if (req.user) {credentials = req.user.credentials;}
 
         ConversationModel.fillDatatable(start, count, userId, userIP, sToken, function blogFill(err, data, countsent, totalavailable) {
             console.log("Conversation.index "+data);
-            var cursor = start+countsent;
-            var json = environment.getCoreUIData();
+            var cursor = start+countsent,
+                json = environment.getCoreUIData();
             //pagination is based on start and count
             //both values are maintained in an html div
             json.start = cursor;
             json.count = Constants.MAX_HIT_COUNT; //pagination size
             json.total = totalavailable;
             json.cargo = data.cargo;
-            return res.render('conversationindex', json);
+            return res.render("conversationindex", json);
         });
     });
 
-    app.get('/conversation/:id', isPrivate, function(req, res) {
+    app.get("/conversation/:id", helpers.isPrivate, function(req, res) {
         var q = req.params.id,
             contextLocator = req.query.contextLocator;
         console.log("GETCON "+q);
         if (q) {
             var userId = req.session[Constants.USER_ID],
-                userIP = '',
-                theUser = getUser(req),
+                userIP = "",
+                theUser = helpers.getUser(req),
                 sToken = req.session[Constants.SESSION_TOKEN];
             CommonModel.fetchTopic(q, userId, userIP, sToken, function bFT(err, rslt) {
                 var data =  environment.getCoreUIData();
@@ -110,7 +76,7 @@ exports.plugin = function(app, environment) {
                 } else {
                     data.context = q; // we are talking about responding to this blog
                 }
-                return res.render('ctopic', data);
+                return res.render("ctopic", data);
             });
         } else {
             //That's not good!
@@ -121,7 +87,7 @@ exports.plugin = function(app, environment) {
      * GET new blog post form
      * WE GET HERE FROM A BOOKMARKLET
      */
-    app.get('/conversationnew', isLoggedIn, function(req, res) {
+    app.get("/conversationnew", helpers.isLoggedIn, function(req, res) {
         var query = req.query,
             data =  environment.getCoreUIData(req);
         data.formtitle = "New Conversation";
@@ -130,14 +96,14 @@ exports.plugin = function(app, environment) {
         data.isNotEdit = true;
         data.url = query.url;
         data.title = query.title;
-        data.action = '/conversation/new';
-        return res.render('conversationform', data); //,
+        data.action = "/conversation/new";
+        return res.render("conversationform", data); //,
     });
 
     /**
      * Capture <code>id</code> and save to Session for later transclusion
      */
-    app.get('/conversationtransclude/:id', isLoggedIn, function(req, res) {
+    app.get("/conversationtransclude/:id", helpers.isLoggedIn, function(req, res) {
         var q = req.params.id;
         //TODO
     });
@@ -145,7 +111,7 @@ exports.plugin = function(app, environment) {
     /**
      * Capture <code>id</code> and save to Session for later transclusion as evidence
      */
-    app.get('/conversationtranscludeevidence/:id', isLoggedIn, function(req, res) {
+    app.get("/conversationtranscludeevidence/:id", helpers.isLoggedIn, function(req, res) {
         var q = req.params.id;
         //TODO
     });
@@ -155,21 +121,21 @@ exports.plugin = function(app, environment) {
     // Based on buttons with an href, e.g.
     //  /newquestion/<someId>?contextLocator=<somecontextlocator>
     /////////////////////////////////////
-    app.get('/newquestion/:id', isLoggedIn, function(req, res) {
+    app.get("/newquestion/:id", helpers.isLoggedIn, function(req, res) {
         var q = req.params.id,
             contextLocator = req.query.contextLocator;
         console.log("NEWQUESTION "+q+" "+contextLocator);
         //TODO
     });
 
-    app.get('/newanswer/:id', isLoggedIn, function(req, res) {
+    app.get("/newanswer/:id", helpers.isLoggedIn, function(req, res) {
         var q = req.params.id,
             contextLocator = req.query.contextLocator;
         console.log("NEWANSWER "+q+" "+contextLocator);
         if (q) {
             var userId = req.session[Constants.USER_ID],
                 theUser = req.session[Constants.THE_USER],
-                userIP = '',
+                userIP = "",
                 sToken = req.session[Constants.SESSION_TOKEN];
             CommonModel.fetchTopic(q, userId, userIP, sToken, function bFT(err, rslt) {
                 var data =  environment.getCoreUIData();
@@ -178,26 +144,26 @@ exports.plugin = function(app, environment) {
                     data = CommonModel.populateTopic(rslt.cargo);
                 }
                 data.locator = q;
-                return res.render('ctopic', data);
+                return res.render("ctopic", data);
             });
         } else {
             //That's not good!
             //TODO
         }
     });
-    app.get('/newpro/:id', isLoggedIn, function(req, res) {
+    app.get("/newpro/:id", helpers.isLoggedIn, function(req, res) {
         var q = req.params.id,
             contextLocator = req.query.contextLocator;
         console.log("NEWPRO "+q+" "+contextLocator);
         //TODO
     });
-    app.get('/newcon/:id', isLoggedIn, function(req, res) {
+    app.get("/newcon/:id", helpers.isLoggedIn, function(req, res) {
         var q = req.params.id,
             contextLocator = req.query.contextLocator;
         console.log("NEWCON "+q+" "+contextLocator);
         //TODO
     });
-    app.get('/newreference/:id', isLoggedIn, function(req, res) {
+    app.get("/newreference/:id", helpers.isLoggedIn, function(req, res) {
         var q = req.params.id,
             contextLocator = req.query.contextLocator;
         console.log("NEWREFERENCE "+q+" "+contextLocator);
@@ -209,16 +175,16 @@ exports.plugin = function(app, environment) {
      * Create a conversation child node
      * where query is /conversationrespond/<type>:<locator>
      */
-    app.get('conversationrespond/:type', isPrivate, function(req, res) {
-        var q = req.params.type;
-        var v = q.split(':');
-        var type = v[0].trim(),
+    app.get("conversationrespond/:type", helpers.isPrivate, function(req, res) {
+        var q = req.params.type,
+            v = q.split(":"),
+            type = v[0].trim(),
             lox = lox = v[1].trim();
         console.log("ConversationRespond "+type+" "+lox);
         //TPDP
     });
 
-    app.get('conversationedit', isLoggedIn, function(req, res) {
+    app.get("/conversationedit", helpers.isLoggedIn, function(req, res) {
         //TODO
     });
 
@@ -240,21 +206,21 @@ exports.plugin = function(app, environment) {
     /**
      * POST new blog post
      */
-    app.post('/conversation/new', isLoggedIn, function(req, res) {
+    app.post("/conversation/new", helpers.isLoggedIn, function(req, res) {
         var body = req.body,
             usx = req.session[Constants.USER_ID],
-            usp = '',
+            usp = "",
             stok = req.session[Constants.SESSION_TOKEN];
-        console.log('BOOKMARK_NEW_POST '+JSON.stringify(usx)+' | '+JSON.stringify(body));
+        console.log("BOOKMARK_NEW_POST "+JSON.stringify(usx)+" | "+JSON.stringify(body));
         _consupport(body, usx, usp, stok, function(err,result) {
-            console.log('BOOKMARK_NEW_POST-1 '+err+' '+result);
+            console.log("BOOKMARK_NEW_POST-1 "+err+" "+result);
             //technically, this should return to "/" since Lucene is not ready to display
             // the new post; you have to refresh the page in any case
-            return res.redirect('/bookmark');
+            return res.redirect("/bookmark");
         });
     });
 
-    app.post('/bookmark/edit', isLoggedIn, function(req, res) {
+    app.post("/conversation/edit", helpers.isLoggedIn, function(req, res) {
         //TODO
     });
 };

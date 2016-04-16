@@ -2,7 +2,10 @@
  * Created by park on 11/17/2015.
  */
 
+var Help = require("./helpers/helpers");
+
 exports.plugin = function(app, environment) {
+    var helpers = new Help(environment);
     console.log("Landing "+environment.getIsPrivatePortal());
     /////////////
     // Routes
@@ -13,14 +16,14 @@ exports.plugin = function(app, environment) {
      * If available, returns json
      * Otherwise, opens an edit form
      */
-    app.get("/", function(req, res) {
+    app.get("/", helpers.isPrivate, function(req, res) {
         var data = environment.getCoreUIData();
         data.title = "TQPortalKS";
         //return res.render('index',  data);
-        return res.render('dragons', data);
+        return res.render("dragons", data);
     });
 
-    app.post("/landing", function(req, res) {
-
+    app.post("/landing", helpers.isPrivate, function(req, res) {
+        //TODO ???
     });
 };

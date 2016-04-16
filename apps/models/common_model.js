@@ -149,15 +149,13 @@ var CommonModel =  module.exports = function(environment) {
         }
     };
 
-    ///////////////////////////
-    // Pivots look like this:
-    //"{\"relationType\":\"TagBookmarkRelationType\",\"documentLocator\":\"tag_two_TAG\",
-    // \"relationLocator\":\"tag_two_TAGTagBookmarkRelationType0177feb6-4168-4883-92ed-7a1e48c0eeb5\",
-    // \"documentLabel\":\"Tag Two\",\"documentType\":\"TagNodeType\",\"relationLabel\":\"TagBookmarkRelationType\",
-    // \"documentSmallIcon\":\"\\/images\\/tag_sm.png\"}"
-    function cleanPivot(pivot) {
-        return pivot; //JSON.parse(pivot);
-    }
+    function renderPivot(piv) {
+        var shell = {};
+        shell.lox = piv.documentLocator;
+        shell.sIco = piv.documentSmallIcon;
+        shell.label = piv.documentLabel;
+        return shell;
+    };
 
     function extractTagPivots(pivots) {
         console.log("ExtractTagPivots "+JSON.stringify(pivots));
@@ -172,24 +170,21 @@ var CommonModel =  module.exports = function(environment) {
             result = undefined;
 
         for (i =0; i<len; i++) {
-            piv = cleanPivot(pivots[i]);
+            piv = pivots[i];
             console.log("PIV "+piv.relationType+" "+JSON.stringify(piv));
             if (piv.documentType === Constants.TAG_TYPE) {
                 boox = true;
-                shell = {};
-                shell.lox = piv.documentLocator;
-                shell.label = piv.documentLabel;
-                shell.icon = piv.documentSmallIcon;
+                shell = renderPivot(piv);
                 list.push(shell);
             }
-        }
-        console.log("FOO "+JSON.stringify(list));
+        };
+        console.log("FOOTAG "+JSON.stringify(list));
         if (boox) {
             result = list;
         }
 
         return result;
-    }
+    };
 
     function extractUserPivots(pivots) {
         var x,
@@ -202,24 +197,21 @@ var CommonModel =  module.exports = function(environment) {
             result = undefined;
 
         for (i =0; i<len; i++) {
-            piv = cleanPivot(pivots[i]);
+            piv = pivots[i];
             console.log("PIV "+piv.relationType+" "+JSON.stringify(piv));
             if (piv.documentType === Constants.USER_TYPE) {
                 boox = true;
-                shell = {};
-                shell.lox = piv.documentLocator;
-                shell.label = piv.documentLabel;
-                shell.icon = piv.documentSmallIcon;
+                shell = renderPivot(piv);
                 list.push(shell);
             }
         }
-        console.log("FOO "+JSON.stringify(list));
+        console.log("FOOUSER "+JSON.stringify(list));
         if (boox) {
             result = list;
         }
-
         return result;
-    }
+    };
+
     function extractDocumentPivots(pivots) {
         var x,
             i,
@@ -231,15 +223,12 @@ var CommonModel =  module.exports = function(environment) {
             result = undefined;
 
         for (i =0; i<len; i++) {
-            piv = cleanPivot(pivots[i]);
+            piv = pivots[i];
             console.log("PIV "+piv.relationType+" "+JSON.stringify(piv));
             if (piv.documentType !== Constants.USER_TYPE &&
                 piv.documentType !== Constants.TAG_TYPE) {
                 boox = true;
-                shell = {};
-                shell.lox = piv.documentLocator;
-                shell.label = piv.documentLabel;
-                shell.icon = piv.documentSmallIcon;
+                shell = renderPivot(piv);
                 shell.doctype = piv.documentType;
                 ////////////////////////////
                 // hand-tuned typing
@@ -257,18 +246,18 @@ var CommonModel =  module.exports = function(environment) {
                 list.push(shell);
             }
         }
-        console.log("FOO "+JSON.stringify(list));
+        console.log("FOODOC "+JSON.stringify(list));
         if (boox) {
             result = list;
         }
-
         return result;
-    }
+    };
+
     function extractTranscludePivots(pivots) {
         var result = undefined;
-
+        //TODO
         return result;
-    }
+    };
 
     /////////////////////////////
     // API

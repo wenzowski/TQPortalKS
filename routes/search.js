@@ -1,21 +1,12 @@
 /**
  * Created by park on 11/27/2015.
  */
-var Constants = require('../apps/constants');
+var Constants = require("../apps/constants"),
+    Help = require("./helpers/helpers");
 
 exports.plugin = function(app, environment) {
-    var self = this,
-        isPrivatePortal = environment.getIsPrivatePortal(),
+    var helpers = new Help(environment),
         SearchModel = environment.getSearchModel();
-
-    function isPrivate(req, res, next) {
-        if (isPrivatePortal) {
-            if (req.isAuthenticated()) {return next();}
-            return res.redirect('/login');
-        } else {
-            return next();
-        }
-    };
 
     /////////////
     // Menu
@@ -28,17 +19,17 @@ exports.plugin = function(app, environment) {
     /**
      * Initial fetch of the /blog landing page
      */
-    app.get('/search', isPrivate, function(req, res) {
+    app.get("/search", helpers.isPrivate, function(req, res) {
         var query = req.query.srch-term,
             data = environment.getCoreUIData();
         data.start=0;
         data.count=Constants.MAX_HIT_COUNT; //pagination size
         data.total=0;
 
-        res.render('search' , data);
+        res.render("search" , data);
     });
 
-    app.post('/search', function(req, res) {
+    app.post("/search", helpers.isPrivate,function(req, res) {
         var q = req.params.id,
             start = parseInt(req.query.start),
             count = parseInt(req.query.count);
