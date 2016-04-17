@@ -140,7 +140,10 @@ exports.plugin = function(app, environment) {
                 finishAuthenticate(req, rslt);
                 console.log("SESS "+req.session[Constants.USER_EMAIL]);
             }
-            return res.render("index", environment.getCoreUIData());
+            var msg = environment.getCoreUIData();
+            //TODO title could be a configuration setting
+            msg.title = "TopicQuests Foundation's Prototype Collaboration Portal";
+            return res.render("index", msg);
         });
      });
 

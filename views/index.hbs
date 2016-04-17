@@ -1,5 +1,7 @@
 <div class="home col-xs-7 col-sm-7 ">
-  <span><h3 class="text-danger">{{themessage}}</h3><span>
-      </div>
-<h1>{{title}}</h1>
-<p>Welcome to {{title}}</p>
+    <!-- themessage is set or reset by an Admin -->
+    {{#if themessage}}
+        <span><h3 class="text-danger">{{themessage}}</h3></span>
+    {{/if}}
+</div>
+<h2>{{title}}</h2>
