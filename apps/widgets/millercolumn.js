@@ -1,8 +1,8 @@
 /**
  * Created by park on 1/13/2016.
  */
-var Sb = require('../stringbuilder'),
-    Constants = require('../constants');
+var Sb = require("../stringbuilder"),
+    Constants = require("../constants");
 
 var MillerColumn = module.exports = function(environment) {
     var self = this,
@@ -47,8 +47,7 @@ var MillerColumn = module.exports = function(environment) {
    //     console.log("ColNavWidget.__makeNodeHTML "+JSON.stringify(node)+" "+buf);
         //TODO modify this to deal with JSON
         buf.append("<li id=\""+node.lox+"\"><a class=\"nodehref\" href=\"");
-        var query = javascript+"('"+node.lox+"', '"+app+node.lox+"?contextLocator="+contextLocator+"&rootLocator="+rootNodeLocator+"&language="+language+aux+"')\"";
-        buf.append(query+" ondblclick =\"doDoubleClick();\">");
+        var query = javascript+"('"+node.lox+"', '"+app+node.lox+"?contextLocator="+contextLocator+"&rootLocator="+rootNodeLocator+"&language="+language+aux+"')\"";        buf.append(query+" ondblclick =\"doDoubleClick();\">");
         buf.append("<img src=\""+node.sIco+"\" class=\"nodeimg\"> ");
         title = node.label; //TODO getLabel(constants.ENGLISH);
         if (!title) {

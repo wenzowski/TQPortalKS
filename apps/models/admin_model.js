@@ -115,13 +115,13 @@ var AdminModel =  module.exports = function(environment) {
         //Sanity checks
         console.log("XXX "+email);
         if (email === "") {
-            return callback('MissingEmail', result);
+            return callback("MissingEmail", result);
         }
         if (handle === "") {
-            return callback('HandleRequired', result);
+            return callback("HandleRequired", result);
         }
         if (password === "") {
-            return callback('MissingPassword', result)
+            return callback("MissingPassword", result)
         }
         if (handle.indexOf(" ") > -1) {
             console.log("BAD HANDLE "+handle);
@@ -131,9 +131,9 @@ var AdminModel =  module.exports = function(environment) {
             console.log("SIGNUP-VALIDATE "+JSON.stringify(truth));
             //SIGNUP VALIDATE {"rMsg":"not found","rToken":""}
             var msg = truth.rMsg;
-            console.log('SS '+msg);
-            if (msg === 'ok') {
-                return callback('HandleExists', result);
+            console.log("SS "+msg);
+            if (msg === "ok") {
+                return callback("HandleExists", result);
             }
             //otherwise continue
             var avatar = request.body.avatar,

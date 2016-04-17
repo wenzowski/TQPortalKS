@@ -1,7 +1,7 @@
 /**
  * Created by park on 11/16/2015.
  */
-var Constants = require('../constants');
+var Constants = require("../constants");
 
 var BlogModel =  module.exports = function(environment) {
     var self = this,
@@ -40,7 +40,7 @@ var BlogModel =  module.exports = function(environment) {
     };
 
     self.createBlogPost = function(json, userId, userIP, sToken, callback) {
-        console.log('BLOG_MODEL_NEW_POST '+JSON.stringify(json)+' | '+JSON.stringify(userId));
+        console.log("BLOG_MODEL_NEW_POST "+JSON.stringify(json)+" | "+JSON.stringify(userId));
         //BLOG_MODEL_NEW_POST {"locator":"","title":"My First Official Blog Post","body":"
         //Yup","tag1":"","tag2":"","tag3":"","tag4":""} | "jackpark"
         //locator, typeLocator, userId, label,
@@ -48,7 +48,7 @@ var BlogModel =  module.exports = function(environment) {
         //    isPrivate, jsonPivots, userIP,sToken,
         var pivots = CommonModel.jsonBallToPivots(json),
             lang = json.language;
-        if (!lang) { lang = 'en';}
+        if (!lang) { lang = "en";}
         CommonModel.createTopicInstance(null, Constants.BLOG_TYPE, userId, json.title, json.body, lang,
             Constants.PUBLICATION, Constants.PUBLICATION_SM, false, null, pivots,
             userIP, sToken, function umC(err, rslt) {

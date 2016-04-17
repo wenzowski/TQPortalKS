@@ -4,7 +4,7 @@
 ///////////////////////////
 // language defaults
 ///////////////////////////
-module.exports.ENGLISH		    = 'en';
+module.exports.ENGLISH		    = "en";
 ///////////////////////////
 // backside stuff
 ///////////////////////////
@@ -27,27 +27,27 @@ module.exports.LIST_INSTANCE_TOPICS =   "ListInstances"; //topicmap
 module.exports.LIST_USERS =             "ListUsers"; //topicmap & userapp
 module.exports.GET_USER =               "GetUser"; // userappE
 module.exports.REMOVE_USER  =           "RemUser"; //userapp post
-module.exports.AUTHENTICATE =           'Auth';
-module.exports.VALIDATE =               'Validate';
-module.exports.NEW_INVITE =             'NewInvite';
-module.exports.REMOVE_INVITE =          'RemoveInvite';
-module.exports.EXISTS_INVITE =          'ExistsInvite';
-module.exports.LIST_INVITES =           'ListInvites';
-module.exports.UPDATE_ROLE =            'UpdUsRol';
-module.exports.UPDATE_EMAIL =           'UpdUsEma';
-module.exports.UPDATE_PASSWORD =        'UpdUsPwd';
+module.exports.AUTHENTICATE =           "Auth";
+module.exports.VALIDATE =               "Validate";
+module.exports.NEW_INVITE =             "NewInvite";
+module.exports.REMOVE_INVITE =          "RemoveInvite";
+module.exports.EXISTS_INVITE =          "ExistsInvite";
+module.exports.LIST_INVITES =           "ListInvites";
+module.exports.UPDATE_ROLE =            "UpdUsRol";
+module.exports.UPDATE_EMAIL =           "UpdUsEma";
+module.exports.UPDATE_PASSWORD =        "UpdUsPwd";
 module.exports.UPDATE_USER_DATA		=   "UpdUsDat";
-module.exports.LOAD_TREE =              'LoadTree';
-module.exports.GET_SEARCH_PARAMS =      'GetSearchParams';
-module.exports.LOGOUT =                 'LogOut';
-module.exports.FIND_OR_PROCESS_TAG =    'FindProcessTag';
+module.exports.LOAD_TREE =              "LoadTree";
+module.exports.GET_SEARCH_PARAMS =      "GetSearchParams";
+module.exports.LOGOUT =                 "LogOut";
+module.exports.FIND_OR_PROCESS_TAG =    "FindProcessTag";
 module.exports.FIND_OR_CREATE_BOOKMARK	= "FindProcessBookmark";
 module.exports.LIST_TREE_CHILD_NODES	= "ListTreeNodes";
 //NODE PROPERTIES
 module.exports.CREATORID_PROP =         "crtr";
 module.exports.DETAILS_PROP =           "details";
 module.exports.INSTANCE_OF_PROP =       "inOf";
-module.exports.IS_PRIVATE_PROP =        "isPrv"; // takes 't' or 'f' case insensitive
+module.exports.IS_PRIVATE_PROP =        "isPrv"; // takes "t" or "f" case insensitive
 module.exports.LABEL_PROP =             "label";
 module.exports.LANGUAGE_PROP =          "Lang";
 module.exports.LARGE_IMAGE_PROP =       "lIco";

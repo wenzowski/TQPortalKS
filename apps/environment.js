@@ -3,24 +3,24 @@
  * A container for all things related to applications
  * Booted in app.js
  */
-var Req = require('./models/drivers/http_request'),
-    Blog = require('./models/blog_model'),
-    Bm = require('./models/bookmark_model'),
-    Common = require('./models/common_model'),
-    Admin = require('./models/admin_model'),
-    Conver = require('./models/conversation_model'),
-    Kan = require('./models/kanban_model'),
-    Tag = require('./models/tag_model'),
-    Srch = require('./models/search_model'),
-    Usr = require('./models/user_model'),
-    Wiki = require('./models/wiki_model'),
-    Tdrvr = require('./models/drivers/topic_driver'),
-    Udrvr = require('./models/drivers/user_driver'),
-    fs = require('fs'),
+var Req = require("./models/drivers/http_request"),
+    Blog = require("./models/blog_model"),
+    Bm = require("./models/bookmark_model"),
+    Common = require("./models/common_model"),
+    Admin = require("./models/admin_model"),
+    Conver = require("./models/conversation_model"),
+    Kan = require("./models/kanban_model"),
+    Tag = require("./models/tag_model"),
+    Srch = require("./models/search_model"),
+    Usr = require("./models/user_model"),
+    Wiki = require("./models/wiki_model"),
+    Tdrvr = require("./models/drivers/topic_driver"),
+    Udrvr = require("./models/drivers/user_driver"),
+    fs = require("fs"),
 //TODO defaults will be replaced by config.json values
     defaults = {
         server: {
-            host: 'localhost',
+            host: "localhost",
             port: 9200
         }
     };
@@ -76,10 +76,10 @@ var Environment = function() {
         searchModel = new Srch(this);
         fs.readFile(path, function environmentReadConfig(err, configfile) {
             configProperties = JSON.parse(configfile);
-            console.log('CONFIG '+JSON.stringify(configProperties));
+            console.log("CONFIG "+JSON.stringify(configProperties));
             //configure HttpClient to talk to BacksideServlet
             httpClient.init(configProperties.backsideHost, configProperties.backsidePort);
-            backsideURL = 'http://'+configProperties.backsideHost+':'+configProperties.backsidePort+'/';
+            backsideURL = "http://"+configProperties.backsideHost+":"+configProperties.backsidePort+"/";
             isInvitationOnly = configProperties.invitationOnly;
             return callback(err);
         });

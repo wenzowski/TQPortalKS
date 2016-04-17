@@ -1,7 +1,7 @@
 /**
  * Created by park on 11/16/2015.
  */
-var Constants = require('../constants');
+var Constants = require("../constants");
 
 var TagnModel =  module.exports = function(environment) {
     var self = this,
