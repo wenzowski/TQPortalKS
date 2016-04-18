@@ -53,7 +53,7 @@ exports.plugin = function(app, environment) {
 
     app.get("/profile/:ID", function (req, res) {
         var email = req.session[Constants.USER_EMAIL],
-            data = environment.getCoreUIData();
+            data = environment.getCoreUIData(req);
         AdminModel.getUser(email, function ap(err, result) {
             var cargo = result.cargo;
             console.log("Admin.profile "+JSON.stringify(cargo));
@@ -115,7 +115,7 @@ exports.plugin = function(app, environment) {
      * GET LogIn
      */
     app.get("/login", function(req, res) {
-        res.render("login", environment.getCoreUIData());
+        res.render("login", environment.getCoreUIData(req));
     });
 
     /**
@@ -135,12 +135,14 @@ exports.plugin = function(app, environment) {
 
             if (rslt.rToken === "") {
                 //not successful
-                return res.redirect("/login")
+                console.log("Bad Login");
+                req.flash("error", "Email or Password not recognized");
+                return res.redirect("/login");
             } else {
                 finishAuthenticate(req, rslt);
-                console.log("SESS "+req.session[Constants.USER_EMAIL]);
+                //console.log("SESS "+req.session[Constants.USER_EMAIL]);
             }
-            var msg = environment.getCoreUIData();
+            var msg = environment.getCoreUIData(req);
             //TODO title could be a configuration setting
             msg.title = "TopicQuests Foundation's Prototype Collaboration Portal";
             return res.render("index", msg);
@@ -163,10 +165,14 @@ exports.plugin = function(app, environment) {
         var handle = req.body.vhandle;
         console.log("Validating "+handle);
         AdminModel.handleUnique(handle, function(err,truth) {
-            console.log("Validating-1 "+truth);
+            console.log("Validating-1 "+err+" "+JSON.stringify(truth));
             var data = environment.getCoreUIData(req);
             data.invitationOnly = isInvitationOnly;
-            if (truth) {data.hndl = handle;}
+            if (truth) {
+                data.hndl = handle;
+            } else {
+                req.flash("error", "Handle not available");
+            }
             return res.render("signup", data);
         });
     });
@@ -183,10 +189,12 @@ exports.plugin = function(app, environment) {
             if (!err) {
                 AdminModel.removeInvitation(email, function adminRemove(err, truth) {
                     console.log("Admin.signup-4 ");
+                    req.flash("error", "Signup successful. Ready to Sign in.");
                     return res.redirect("/");
                 });
             } else {
                 //TODO deal with error
+                req.flash("error", "Signup error 1 : "+err);
                 return res.redirect("/"); // for now
             }
         });
@@ -208,6 +216,7 @@ exports.plugin = function(app, environment) {
                     return doPostSignup(req, res);
                  } else {
                     console.log("Admin.signup-3 ");
+                    req.flash("error", "Signup error 2: "+msg);
                     return res.redirect("/");
                 }
             });

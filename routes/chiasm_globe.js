@@ -15,7 +15,7 @@ exports.plugin = function(app, environment) {
     /////////////
 
     app.get("/globe", helpers.isPrivate, function(req, res) {
-        var data = environment.getCoreUIData();
+        var data = environment.getCoreUIData(req);
 
         res.render("globe" , data);
     });

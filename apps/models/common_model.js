@@ -451,7 +451,7 @@ var CommonModel =  module.exports = function(environment) {
      * @return
      */
     self.populateTopic = function(jsonTopic, user) {
-        var result = environment.getCoreUIData();
+        var result = environment.getCoreUIData(req);
         result.lIco = jsonTopic.lIco;
         result.label = jsonTopic.label;
         result.details = jsonTopic.details;

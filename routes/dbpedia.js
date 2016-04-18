@@ -14,7 +14,7 @@ exports.plugin = function(app, environment) {
     // router
     /////////////////
     app.get("/dbpedia", helpers.isPrivate, function dbPediaGet(req, res) {
-        var data = environment.getCoreUIData();
+        var data = environment.getCoreUIData(req);
         return res.render("dbpedia", data);
     });
 

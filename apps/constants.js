@@ -29,6 +29,7 @@ module.exports.GET_USER =               "GetUser"; // userappE
 module.exports.REMOVE_USER  =           "RemUser"; //userapp post
 module.exports.AUTHENTICATE =           "Auth";
 module.exports.VALIDATE =               "Validate";
+module.exports.EXISTS_EMAIL	=           "ExstEmail";
 module.exports.NEW_INVITE =             "NewInvite";
 module.exports.REMOVE_INVITE =          "RemoveInvite";
 module.exports.EXISTS_INVITE =          "ExistsInvite";

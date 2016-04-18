@@ -14,6 +14,6 @@ exports.plugin = function(app, environment) {
     // Routes
     /////////////////
     app.get("/research", helpers.isPrivate, function webResearchGet(req, res) {
-        res.render("webresearch", environment.getCoreUIData());
+        res.render("webresearch", environment.getCoreUIData(req));
     });
 }

@@ -41,7 +41,7 @@ exports.plugin = function(app, environment) {
         BlogModel.fillDatatable(start, count, userId, userIP, sToken, function blogFill(err, data, countsent, totalavailable) {
             console.log("Blog.index "+data);
             var cursor = start+countsent,
-                json = environment.getCoreUIData();
+                json = environment.getCoreUIData(req);
             //pagination is based on start and count
             //both values are maintained in an html div
             json.start = cursor;
@@ -62,7 +62,7 @@ exports.plugin = function(app, environment) {
                 userIP = "",
                 sToken = req.session[Constants.SESSION_TOKEN];
             CommonModel.fetchTopic(q, userId, userIP, sToken, function bFT(err, rslt) {
-                var data =  environment.getCoreUIData();
+                var data =  environment.getCoreUIData(req);
                 if (rslt.cargo) {
                     CommonModel.populateConversationTopic(rslt.cargo, theUser, "/blog/", userIP, sToken,
                                 function bC(err, rslt) {

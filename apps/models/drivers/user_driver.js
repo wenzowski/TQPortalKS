@@ -63,7 +63,25 @@ var UserDriver =  module.exports = function(environment) {
             query = queryUtil.getCoreQuery(verb, handle, '', null);
         console.log("VALIDATE "+handle);
         httpClient.get(urx, query, function tdLUT(err, rslt) {
-            return callback(err, rslt);
+            var msg = rslt.rMsg;
+            //will be true if the username does not exist
+            return callback(err, (msg === "ok"));
+        });
+    };
+
+    self.existsEmail = function(email, callback) {
+        var urx = '/auth/',
+            verb = Constants.EXISTS_EMAIL,
+            query = {};
+        query.verb = verb;
+        query.uIP = '';
+        query.uEmail = email;
+        query.sToken = '';
+        console.log("EXISTSEMAIL "+email);
+        httpClient.get(urx, query, function tdLUT(err, rslt) {
+            var msg = rslt.rMsg;
+            //will be true if this email does exist
+            return callback(err, (msg === "ok"));
         });
     };
 

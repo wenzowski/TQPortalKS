@@ -17,7 +17,7 @@ exports.plugin = function(app, environment) {
      * Otherwise, opens an edit form
      */
     app.get("/", helpers.isPrivate, function(req, res) {
-        var data = environment.getCoreUIData();
+        var data = environment.getCoreUIData(req);
         data.title = "TQPortalKS";
         //return res.render('index',  data);
         return res.render("dragons", data);

@@ -14,13 +14,13 @@ var express = require("express"),
     fs = require("fs"),
     viewPath = path.join(process.cwd(), "views");
 // view engine setup
-app.use(flash());
 app.engine("hbs", hbs.express4({
   defaultLayout: path.join(viewPath, "layouts", "layout"),
   partialsDir: __dirname + "/views/partials"
 }));
 app.set("view engine", "hbs");
 app.set("views", viewPath); //path.join(__dirname, "/views"));
+app.use(flash());
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, "public", "favicon.ico")));

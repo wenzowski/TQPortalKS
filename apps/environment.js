@@ -121,7 +121,8 @@ var Environment = function() {
     self.setUserEmail = function(email) {
         userEmail = email;
     };
-    self.getCoreUIData = function() {
+
+    self.getCoreUIData = function (req) {
         var result = {};
         result.isAuthenticated = isAuthenticated;
         result.isAdmin = isAdmin;
@@ -129,6 +130,10 @@ var Environment = function() {
         result.email = userEmail;
         result.appmenu = appMenu;
         result.isInvitationOnly = isInvitationOnly;
+        if (req.flash) {
+            result.flashMsg = req.flash("error") || req.flash("success");
+        }
+
         return result;
     };
 

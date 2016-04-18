@@ -23,7 +23,7 @@ exports.plugin = function(app, environment) {
      *
      */
     app.get("/user", helpers.isPrivate, function (req, res) {
-        var data =  environment.getCoreUIData();
+        var data =  environment.getCoreUIData(req);
         data.start=0;
         UserModel.listUsers(0, -1, function uLU(err, rslt) {
             if (rslt.cargo) {
@@ -42,7 +42,7 @@ exports.plugin = function(app, environment) {
                 theUser = helpers.getUser(req),
                 sToken = req.session[Constants.SESSION_TOKEN];
             CommonModel.fetchTopic(q, userId, userIP, sToken, function uFT(err, rslt) {
-                var data =  environment.getCoreUIData();
+                var data =  environment.getCoreUIData(req);
                 if (rslt.cargo) {
                     data = CommonModel.populateTopic(rslt.cargo, theUser);
                 }

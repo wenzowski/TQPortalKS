@@ -14,7 +14,7 @@ exports.plugin = function(app, environment) {
     // router
     /////////////////
     app.get("/geomap", helpers.isPrivate, function geoMapGet(req, res) {
-        var data = environment.getCoreUIData();
+        var data = environment.getCoreUIData(req);
         //NOTE, we can create a GeoMap model to control map initialization;
         // here we hard wire some values
         data.x = "30.0";

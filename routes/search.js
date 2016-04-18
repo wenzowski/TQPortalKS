@@ -21,7 +21,7 @@ exports.plugin = function(app, environment) {
      */
     app.get("/search", helpers.isPrivate, function(req, res) {
         var query = req.query.srch-term,
-            data = environment.getCoreUIData();
+            data = environment.getCoreUIData(req);
         data.start=0;
         data.count=Constants.MAX_HIT_COUNT; //pagination size
         data.total=0;
