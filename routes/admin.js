@@ -216,7 +216,7 @@ exports.plugin = function(app, environment) {
                     return doPostSignup(req, res);
                  } else {
                     console.log("Admin.signup-3 ");
-                    req.flash("error", "Signup error 2: "+msg);
+                    req.flash("error", "Signup error 2: Invitation Required");
                     return res.redirect("/");
                 }
             });
