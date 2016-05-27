@@ -17,10 +17,10 @@ exports.plugin = function(app, environment) {
     /////////////
 
     /**
-     * Initial fetch of the /blog landing page
+     * Initial fetch of the /search landing page
      */
     app.get("/search", helpers.isPrivate, function(req, res) {
-        var query = req.query.srch-term,
+        var query = req.query["srch-term"],
             data = environment.getCoreUIData(req);
         data.start=0;
         data.count=Constants.MAX_HIT_COUNT; //pagination size

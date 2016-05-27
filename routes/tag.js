@@ -26,7 +26,7 @@ exports.plugin = function(app, environment) {
         if (!count) {
             count = Constants.MAX_HIT_COUNT;
         }
-        console.log("BLOGS "+start+" "+count);
+        console.log("Tags "+start+" "+count);
 
         var userId= "",
             userIP= "",
@@ -34,7 +34,7 @@ exports.plugin = function(app, environment) {
         if (req.user) {credentials = req.user.credentials;}
 
         TagModel.fillDatatable(start, count, userId, userIP, sToken, function blogFill(err, data, countsent, totalavailable) {
-            console.log("Blog.index "+data);
+            console.log("Tag.index "+data);
             var cursor = start+countsent,
                 json = environment.getCoreUIData(req);
             //pagination is based on start and count

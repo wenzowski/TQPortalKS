@@ -3,7 +3,7 @@
   "port": "3000",
   "brand": "TopicQuests Portal",
   "portalIsPrivate": false,
-  "invitationOnly": true,
+  "invitationOnly": false,
   "backsideHost" : "localhost",
   "backsidePort" : "8080"
 }

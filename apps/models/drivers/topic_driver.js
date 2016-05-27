@@ -120,6 +120,7 @@ var TopicDriver =  module.exports = function(environment) {
         query.from = start.toString();
         query.count = count.toString();
         query.inOf = typeLocator;
+        console.log("LISTINSTANCES "+JSON.stringify(query));
         httpClient.get(urx, query, function tdLUT(err, rslt) {
             return callback(err, rslt);
         });

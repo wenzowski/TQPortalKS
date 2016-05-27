@@ -79,6 +79,7 @@ var HttpClient = function() {
             });
 
             response.on('end', function(){
+                console.log("HTTPGET "+body);
                 result = JSON.parse(body);
                 return callback(err, result);
             });
