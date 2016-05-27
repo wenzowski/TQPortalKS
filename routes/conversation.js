@@ -68,7 +68,7 @@ exports.plugin = function(app, environment) {
                 var data =  environment.getCoreUIData(req);
                 if (rslt.cargo) {
                     //TODO populateConversationTopic
-                    data = CommonModel.populateTopic(rslt.cargo, theUser);
+                    data = CommonModel.populateTopic(rslt.cargo, theUser, data);
                 }
                 data.locator = q;
                 if (contextLocator && contextLocator !== "") {

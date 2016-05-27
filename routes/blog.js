@@ -65,7 +65,7 @@ exports.plugin = function(app, environment) {
                 var data =  environment.getCoreUIData(req);
                 if (rslt.cargo) {
                     CommonModel.populateConversationTopic(rslt.cargo, theUser, "/blog/", userIP, sToken,
-                                function bC(err, rslt) {
+                                data, function bC(err, rslt) {
                         data = rslt;
                         console.log("BOOBOO "+JSON.stringify(data));
                     });

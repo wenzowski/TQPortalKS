@@ -86,7 +86,7 @@ exports.plugin = function(app, environment) {
             CommonModel.fetchTopic(q, userId, userIP, sToken, function bFT(err, rslt) {
                 var data =  environment.getCoreUIData(req);
                 if (rslt.cargo) {
-                    data = CommonModel.populateTopic(rslt.cargo, theUser);
+                    data = CommonModel.populateTopic(rslt.cargo, theUser, data);
                 }
                 data.locator = q;
                 if (contextLocator && contextLocator !== "") {

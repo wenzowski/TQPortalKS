@@ -448,10 +448,11 @@ var CommonModel =  module.exports = function(environment) {
      * Populate UI data for the topic.hbs template
      * @param jsonTopic
      * @param user the full user account object
+     * @param result -- coreUIData
      * @return
      */
-    self.populateTopic = function(jsonTopic, user) {
-        var result = environment.getCoreUIData(req);
+    self.populateTopic = function(jsonTopic, user, result) {
+        //var result = environment.getCoreUIData(req);
         result.lIco = jsonTopic.lIco;
         result.label = jsonTopic.label;
         result.details = jsonTopic.details;
@@ -500,10 +501,11 @@ var CommonModel =  module.exports = function(environment) {
      * @param jsonTopic
      * @param user\
      * @param app e.g. 'blog'
+     * @param data
      * @callback signature (err, rslt)
      */
-    self.populateConversationTopic = function(jsonTopic, user, app, userIP, sToken, callback) {
-        var myResult = self.populateTopic(jsonTopic, user);
+    self.populateConversationTopic = function(jsonTopic, user, app, userIP, sToken, data, callback) {
+        var myResult = self.populateTopic(jsonTopic, user, data);
         console.log('POPCONTOPIC '+JSON.stringify(myResult));
         var contextLocator = jsonTopic.lox;//TODO
         var language = "en", //TODO
