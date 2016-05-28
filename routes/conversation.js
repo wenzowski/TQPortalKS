@@ -83,16 +83,17 @@ exports.plugin = function(app, environment) {
             //TODO
         }
     });
+
+
     /**
-     * GET new blog post form
-     * WE GET HERE FROM A BOOKMARKLET
+     * Here from the New Conversation Button
      */
     app.get("/conversationnew", helpers.isLoggedIn, function(req, res) {
         var query = req.query,
             data =  environment.getCoreUIData(req);
         data.formtitle = "New Conversation";
         data.nodeicon = "/images/ibis/map.png";
-        data.nodetype = Constants.CONVERSATION_MAP_TYPE;
+        data.nodeType = Constants.CONVERSATION_MAP_TYPE;
         data.isNotEdit = true;
         data.url = query.url;
         data.title = query.title;
@@ -192,7 +193,7 @@ exports.plugin = function(app, environment) {
      * Function which ties the app-embedded route back to here
      */
     var _consupport = function(json, isPrivate, userId, userIP, sToken,  callback) {
-        if (body.locator === "") {
+        if (json.locator === "") {
             ConversationModel.create(json, isPrivate, userId, userIP, sToken, function blsA(err, result) {
                 return callback(err, result);
             });
@@ -210,13 +211,14 @@ exports.plugin = function(app, environment) {
         var body = req.body,
             usx = req.session[Constants.USER_ID],
             usp = "",
-            stok = req.session[Constants.SESSION_TOKEN];
-        console.log("BOOKMARK_NEW_POST "+JSON.stringify(usx)+" | "+JSON.stringify(body));
-        _consupport(body, usx, usp, stok, function(err,result) {
-            console.log("BOOKMARK_NEW_POST-1 "+err+" "+result);
+            stok = req.session[Constants.SESSION_TOKEN],
+            isPrivate = false; //TODO
+        console.log("CONVERSATION_NEW_POST "+JSON.stringify(usx)+" | "+JSON.stringify(body));
+        _consupport(body, isPrivate, usx, usp, stok, function(err, result) {
+            console.log("CONVERSATION_NEW_POST-1 "+err+" "+result);
             //technically, this should return to "/" since Lucene is not ready to display
             // the new post; you have to refresh the page in any case
-            return res.redirect("/bookmark");
+            return res.redirect("/conversation");
         });
     });
 

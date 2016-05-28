@@ -423,13 +423,14 @@ var CommonModel =  module.exports = function(environment) {
     self.createConversationNode = function(typeLocator, parentLocator, contextLocator, userId, label, details, language,
                                            largeImagePath, smallImagePath, isPrivate, jsonPivots,
                                             userIP, sToken, callback) {
+        console.log("COMMON_MODEL_CONV_NODE "+parentLocator);
         var jsonT = createNewInstanceTopic(null, typeLocator, userId, label, details, language,
             largeImagePath, smallImagePath, isPrivate);
-        if (parentLocator !== null) {
+        if (parentLocator !== null && parentLocator !== "") {
             var extras = {};
             var kid = childStruct(contextLocator, parentLocator);
             extras.AddChildNode = kid;
-            josnT.extras = extras;
+            jsonT.extras = extras;
         }
         topicDriver.submitNewInstanceTopic(jsonT, userId, userIP, sToken, function cmCT(err, rslt) {
             var x = rslt.cargo;

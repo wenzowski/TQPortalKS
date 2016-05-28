@@ -84,7 +84,8 @@ exports.plugin = function(app, environment) {
     /**
      * GET new wiki post form
      */
-    app.get("/wiki/new", helpers.isLoggedIn, function (req, res) {
+    app.get("/wikinew", helpers.isLoggedIn, function (req, res) {
+        console.log("NEW WIKI");
         var data = environment.getCoreUIData(req);
         data.formtitle = "New Wiki Topic";
         data.isNotEdit = true;
@@ -95,13 +96,13 @@ exports.plugin = function(app, environment) {
     /**
      * Function which ties the app-embedded route back to here
      */
-    var _wikisupport = function (body, usx, callback) {
+    var _wikisupport = function (body, userId, userIP, sToken , callback) {
         if (body.locator === "") {
-            WikiModel.createWikiTopic(body, usx, function (err, result) {
+            WikiModel.createWikiTopic(body, userId, userIP, sToken, function (err, result) {
                 return callback(err, result);
             });
         } else {
-            WikiModel.update(body, usx, function (err, result) {
+            WikiModel.update(body, userId, userIP, sToken, function (err, result) {
                 return callback(err, result);
             });
         }
@@ -112,9 +113,12 @@ exports.plugin = function(app, environment) {
      */
     app.post("/wiki/new", helpers.isLoggedIn, function (req, res) {
         var body = req.body,
-            usx = req.user;
+            usx = req.user,
+            userId = req.session[Constants.USER_ID],
+            userIP = "",
+            sToken = req.session[Constants.SESSION_TOKEN];
         console.log("WIKI_NEW_POST " + JSON.stringify(usx) + " | " + JSON.stringify(body));
-        _wikisupport(body, usx, function (err, result) {
+        _wikisupport(body, userId, userIP, sToken, function (err, result) {
             console.log("WIKI_NEW_POST-1 " + err + " " + result);
             //technically, this should return to "/" since Lucene is not ready to display
             // the new post; you have to refresh the page in any case

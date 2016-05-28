@@ -1,10 +1,13 @@
 /**
  * Created by park on 11/16/2015.
  */
+var Constants = require("../constants"),
+    WikiModel;
 
-var WikiModel =  module.exports = function(environment) {
+WikiModel =  module.exports = function(environment) {
     var self = this,
-        topicDriver = environment.getTopicDriver();
+        topicDriver = environment.getTopicDriver(),
+        CommonModel = environment.getCommonModel();
     console.log("Wiki "+topicDriver);
 
     self.fillDatatable = function(start, count, userId, userIP, sToken, callback) {
