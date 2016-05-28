@@ -44,7 +44,7 @@ exports.plugin = function(app, environment) {
             CommonModel.fetchTopic(q, userId, userIP, sToken, function uFT(err, rslt) {
                 var data =  environment.getCoreUIData(req);
                 if (rslt.cargo) {
-                    data = CommonModel.populateTopic(rslt.cargo, theUser, data);
+                    data = CommonModel.populateTopic(rslt.cargo, theUser);
                 }
                 return res.render("topic", data);
             });

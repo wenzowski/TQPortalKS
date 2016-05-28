@@ -2,12 +2,12 @@
  * Created by park on 5/28/2016.
  */
 var Constants = require("../constants"),
-    RpgModel;
+    GuildModel;
 
-RpgModel =  module.exports = function(environment) {
+GuildModel =  module.exports = function(environment) {
     var self = this,
         topicDriver = environment.getTopicDriver(),
         CommonModel = environment.getCommonModel();
-    console.log("RPG "+topicDriver);
+    console.log("GUILD "+topicDriver);
 
 };

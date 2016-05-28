@@ -35,8 +35,9 @@ exports.plugin = function(app, environment) {
 
         var userId= "",
             userIP= "",
-            sToken= null;
-        if (req.user) {credentials = req.user.credentials;}
+            sToken= null,
+            usx = helpers.getUser(),
+            credentials = usx.uRole;
 
         BlogModel.fillDatatable(start, count, userId, userIP, sToken, function blogFill(err, data, countsent, totalavailable) {
             console.log("Blog.index "+data);
@@ -65,7 +66,7 @@ exports.plugin = function(app, environment) {
                 var data =  environment.getCoreUIData(req);
                 if (rslt.cargo) {
                     CommonModel.populateConversationTopic(rslt.cargo, theUser, "/blog/", userIP, sToken,
-                                data, function bC(err, rslt) {
+                                function bC(err, rslt) {
                         data = rslt;
                         console.log("BOOBOO "+JSON.stringify(data));
                     });
@@ -119,11 +120,11 @@ exports.plugin = function(app, environment) {
      */
     app.post("/blog/new", helpers.isLoggedIn, function(req, res) {
         var body = req.body,
-            usx = req.session[Constants.USER_ID],
-            usp = "",
-            stok = req.session[Constants.SESSION_TOKEN];
-        console.log("BLOG_NEW_POST "+JSON.stringify(usx)+" | "+JSON.stringify(body));
-         _blogsupport(body, usx, usp, stok, function(err,result) {
+            userId = req.session[Constants.USER_ID],
+            userIP = "",
+            sToken = req.session[Constants.SESSION_TOKEN];
+        console.log("BLOG_NEW_POST "+JSON.stringify(body));
+         _blogsupport(body, userId, userIP, sToken, function(err,result) {
             console.log("BLOG_NEW_POST-1 "+err+" "+result);
             //technically, this should return to "/" since Lucene is not ready to display
             // the new post; you have to refresh the page in any case

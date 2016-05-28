@@ -19,25 +19,18 @@ exports.plugin = function(app, environment) {
     // Routes
     /////////////
 
-    /**
-     * Initial fetch of the /blog landing page
-     */
-    app.get("/wiki", helpers.isPrivate, function (req, res) {
-        res.render("wikiindex", environment.getCoreUIData(req));
-    });
 
     /**
-     * GET blog index
+     * GET wiki index
      */
-    app.get("/wiki/index", helpers.isPrivate, function (req, res) {
+    app.get("/wiki", helpers.isPrivate, function (req, res) {
         var start = parseInt(req.query.start),
             count = parseInt(req.query.count),
             userId = "",
             userIP = "",
-            sToken = null;
-        if (req.user) {
-            credentials = req.user.credentials;
-        }
+            sToken = null,
+            usx = helpers.getUser(),
+            credentials = usx.uRole;
 
         WikiModel.fillDatatable(start, count, userId, userIP, sToken, function blogFill(data, countsent, totalavailable) {
             console.log("Wiki.index " + data);
@@ -66,7 +59,7 @@ exports.plugin = function(app, environment) {
                 var data =  environment.getCoreUIData(req);
                 if (rslt.cargo) {
                     //TODO populateConversationTopic
-                    data = CommonModel.populateTopic(rslt.cargo, theUser, data);
+                    data = CommonModel.populateTopic(rslt.cargo, theUser);
                 }
                 data.locator = q;
                 if (contextLocator && contextLocator !== "") {
@@ -85,7 +78,6 @@ exports.plugin = function(app, environment) {
      * GET new wiki post form
      */
     app.get("/wikinew", helpers.isLoggedIn, function (req, res) {
-        console.log("NEW WIKI");
         var data = environment.getCoreUIData(req);
         data.formtitle = "New Wiki Topic";
         data.isNotEdit = true;
@@ -96,7 +88,7 @@ exports.plugin = function(app, environment) {
     /**
      * Function which ties the app-embedded route back to here
      */
-    var _wikisupport = function (body, userId, userIP, sToken , callback) {
+    var _wikisupport = function (body, userId, userIP, sToken, callback) {
         if (body.locator === "") {
             WikiModel.createWikiTopic(body, userId, userIP, sToken, function (err, result) {
                 return callback(err, result);
@@ -113,11 +105,10 @@ exports.plugin = function(app, environment) {
      */
     app.post("/wiki/new", helpers.isLoggedIn, function (req, res) {
         var body = req.body,
-            usx = req.user,
             userId = req.session[Constants.USER_ID],
             userIP = "",
             sToken = req.session[Constants.SESSION_TOKEN];
-        console.log("WIKI_NEW_POST " + JSON.stringify(usx) + " | " + JSON.stringify(body));
+        console.log("WIKI_NEW_POST " + JSON.stringify(body));
         _wikisupport(body, userId, userIP, sToken, function (err, result) {
             console.log("WIKI_NEW_POST-1 " + err + " " + result);
             //technically, this should return to "/" since Lucene is not ready to display

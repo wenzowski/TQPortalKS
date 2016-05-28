@@ -57,8 +57,9 @@ exports.plugin = function(app, environment) {
 
         var userId= "",
             userIP= "",
-            sToken= null;
-        if (req.user) {credentials = req.user.credentials;}
+            sToken= null,
+            usx = helpers.getUser(),
+            credentials = usx.uRole;
 
         BookmarkModel.fillDatatable(start, count, userId, userIP, sToken, function blogFill(err, data, countsent, totalavailable) {
             console.log("Bookmark.index "+data);
@@ -86,7 +87,7 @@ exports.plugin = function(app, environment) {
             CommonModel.fetchTopic(q, userId, userIP, sToken, function bFT(err, rslt) {
                 var data =  environment.getCoreUIData(req);
                 if (rslt.cargo) {
-                    data = CommonModel.populateTopic(rslt.cargo, theUser, data);
+                    data = CommonModel.populateTopic(rslt.cargo, theUser);
                 }
                 data.locator = q;
                 if (contextLocator && contextLocator !== "") {
@@ -141,11 +142,11 @@ exports.plugin = function(app, environment) {
      */
     app.post("/bookmark/new", helpers.isLoggedIn, function(req, res) {
         var body = req.body,
-            usx = req.session[Constants.USER_ID],
-            usp = "",
-            stok = req.session[Constants.SESSION_TOKEN];
-        console.log("BOOKMARK_NEW_POST "+JSON.stringify(usx)+" | "+JSON.stringify(body));
-        _bookmarksupport(body, usx, usp, stok, function(err,result) {
+            userId = req.session[Constants.USER_ID],
+            userIP = "",
+            sToken = req.session[Constants.SESSION_TOKEN];
+        console.log("BOOKMARK_NEW_POST "+JSON.stringify(body));
+        _bookmarksupport(body, userId, userIP, sToken, function bP(err,result) {
             console.log("BOOKMARK_NEW_POST-1 "+err+" "+result);
             //technically, this should return to "/" since Lucene is not ready to display
             // the new post; you have to refresh the page in any case

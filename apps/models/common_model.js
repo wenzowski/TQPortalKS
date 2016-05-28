@@ -423,14 +423,13 @@ var CommonModel =  module.exports = function(environment) {
     self.createConversationNode = function(typeLocator, parentLocator, contextLocator, userId, label, details, language,
                                            largeImagePath, smallImagePath, isPrivate, jsonPivots,
                                             userIP, sToken, callback) {
-        console.log("COMMON_MODEL_CONV_NODE "+parentLocator);
         var jsonT = createNewInstanceTopic(null, typeLocator, userId, label, details, language,
             largeImagePath, smallImagePath, isPrivate);
-        if (parentLocator !== null && parentLocator !== "") {
+        if (parentLocator !== null) {
             var extras = {};
             var kid = childStruct(contextLocator, parentLocator);
             extras.AddChildNode = kid;
-            jsonT.extras = extras;
+            josnT.extras = extras;
         }
         topicDriver.submitNewInstanceTopic(jsonT, userId, userIP, sToken, function cmCT(err, rslt) {
             var x = rslt.cargo;
@@ -449,11 +448,10 @@ var CommonModel =  module.exports = function(environment) {
      * Populate UI data for the topic.hbs template
      * @param jsonTopic
      * @param user the full user account object
-     * @param result -- coreUIData
      * @return
      */
-    self.populateTopic = function(jsonTopic, user, result) {
-        //var result = environment.getCoreUIData(req);
+    self.populateTopic = function(jsonTopic, user) {
+        var result = environment.getCoreUIData(req);
         result.lIco = jsonTopic.lIco;
         result.label = jsonTopic.label;
         result.details = jsonTopic.details;
@@ -502,11 +500,10 @@ var CommonModel =  module.exports = function(environment) {
      * @param jsonTopic
      * @param user\
      * @param app e.g. 'blog'
-     * @param data
      * @callback signature (err, rslt)
      */
-    self.populateConversationTopic = function(jsonTopic, user, app, userIP, sToken, data, callback) {
-        var myResult = self.populateTopic(jsonTopic, user, data);
+    self.populateConversationTopic = function(jsonTopic, user, app, userIP, sToken, callback) {
+        var myResult = self.populateTopic(jsonTopic, user);
         console.log('POPCONTOPIC '+JSON.stringify(myResult));
         var contextLocator = jsonTopic.lox;//TODO
         var language = "en", //TODO

@@ -26,15 +26,16 @@ exports.plugin = function(app, environment) {
         if (!count) {
             count = Constants.MAX_HIT_COUNT;
         }
-        console.log("Tags "+start+" "+count);
+        console.log("BLOGS "+start+" "+count);
 
         var userId= "",
             userIP= "",
-            sToken= null;
-        if (req.user) {credentials = req.user.credentials;}
+            sToken= null,
+            usx = helpers.getUser(),
+            credentials = usx.uRole;
 
         TagModel.fillDatatable(start, count, userId, userIP, sToken, function blogFill(err, data, countsent, totalavailable) {
-            console.log("Tag.index "+data);
+            console.log("Blog.index "+data);
             var cursor = start+countsent,
                 json = environment.getCoreUIData(req);
             //pagination is based on start and count
@@ -58,7 +59,7 @@ exports.plugin = function(app, environment) {
             CommonModel.fetchTopic(q, userId, userIP, sToken, function bFT(err, rslt) {
                 var data =  environment.getCoreUIData(req);
                 if (rslt.cargo) {
-                    data = CommonModel.populateTopic(rslt.cargo, theUser, data);
+                    data = CommonModel.populateTopic(rslt.cargo, theUser);
                 }
                 return res.render("topic", data);
             });

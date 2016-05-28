@@ -34,23 +34,18 @@ var ConversationModel =  module.exports = function(environment) {
     };
 
     self.create = function(json, isPrivate, userId, userIP, sToken, callback) {
-        console.log("CONVERSATION_MODEL_NEW_POST "+JSON.stringify(json)+" | "+JSON.stringify(userId));
+        console.log("BOOKMARK_MODEL_NEW_POST "+JSON.stringify(json)+" | "+JSON.stringify(userId));
         //BLOG_MODEL_NEW_POST {"locator":"","title":"My First Official Blog Post","body":"
         //Yup","tag1":"","tag2":"","tag3":"","tag4":""} | "jackpark"
         //locator, typeLocator, userId, label,
         //details, language, largeImagePath, smallImagePath,
         //    isPrivate, jsonPivots, userIP,sToken,
         var pivots = CommonModel.jsonBallToPivots(json),
-            lang = json.language,
-            lox = json.locator;
+            lang = json.language;
         if (!lang) { lang = "en";}
-        if (lox === "") {lox = null};
-
-        CommonModel
-            .createConversationNode(json.nodetype, json.locator, json.context,
-                                    userId, json.title, json.body, lang,
-                                    getLargeIcon(json.nodetype), getSmallIcon(json.nodetype),
-                                    isPrivate, pivots, userIP, sToken, function umC(err, rslt) {
+        CommonModel.createConversationNode(json.nodetype, json.locator, json.context, userId, json.title, json.body, lang,
+            getLargeIcon(nodeType), getSmallIcon(nodeType), isPrivate, pivots,
+            userIP, sToken, function umC(err, rslt) {
                 return callback(err, rslt);
             });
     };

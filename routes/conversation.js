@@ -38,8 +38,9 @@ exports.plugin = function(app, environment) {
 
         var userId= "",
             userIP= "",
-            sToken= null;
-        if (req.user) {credentials = req.user.credentials;}
+            sToken= null,
+            usx = helpers.getUser();
+            credentials = usx.uRole;
 
         ConversationModel.fillDatatable(start, count, userId, userIP, sToken, function blogFill(err, data, countsent, totalavailable) {
             console.log("Conversation.index "+data);
@@ -68,7 +69,7 @@ exports.plugin = function(app, environment) {
                 var data =  environment.getCoreUIData(req);
                 if (rslt.cargo) {
                     //TODO populateConversationTopic
-                    data = CommonModel.populateTopic(rslt.cargo, theUser, data);
+                    data = CommonModel.populateTopic(rslt.cargo, theUser);
                 }
                 data.locator = q;
                 if (contextLocator && contextLocator !== "") {
@@ -83,17 +84,16 @@ exports.plugin = function(app, environment) {
             //TODO
         }
     });
-
-
     /**
-     * Here from the New Conversation Button
+     * GET new blog post form
+     * WE GET HERE FROM A BOOKMARKLET
      */
     app.get("/conversationnew", helpers.isLoggedIn, function(req, res) {
         var query = req.query,
             data =  environment.getCoreUIData(req);
         data.formtitle = "New Conversation";
         data.nodeicon = "/images/ibis/map.png";
-        data.nodeType = Constants.CONVERSATION_MAP_TYPE;
+        data.nodetype = Constants.CONVERSATION_MAP_TYPE;
         data.isNotEdit = true;
         data.url = query.url;
         data.title = query.title;
@@ -193,12 +193,12 @@ exports.plugin = function(app, environment) {
      * Function which ties the app-embedded route back to here
      */
     var _consupport = function(json, isPrivate, userId, userIP, sToken,  callback) {
-        if (json.locator === "") {
+        if (body.locator === "") {
             ConversationModel.create(json, isPrivate, userId, userIP, sToken, function blsA(err, result) {
                 return callback(err, result);
             });
         } else {
-            ConversationModel.update(json, userId, userIP, sToken, function blSB(err, result) {
+            ConversationModel.update(json, userId, userIP, sToken, function cl(err, result) {
                 return callback(err, result);
             });
         }
@@ -209,12 +209,11 @@ exports.plugin = function(app, environment) {
      */
     app.post("/conversation/new", helpers.isLoggedIn, function(req, res) {
         var body = req.body,
-            usx = req.session[Constants.USER_ID],
-            usp = "",
-            stok = req.session[Constants.SESSION_TOKEN],
-            isPrivate = false; //TODO
-        console.log("CONVERSATION_NEW_POST "+JSON.stringify(usx)+" | "+JSON.stringify(body));
-        _consupport(body, isPrivate, usx, usp, stok, function(err, result) {
+            userId = req.session[Constants.USER_ID],
+            userIP = "",
+            sToken = req.session[Constants.SESSION_TOKEN];
+        console.log("CONVERSATION_NEW_POST "+JSON.stringify(body));
+        _consupport(body, userId, userIP, sToken, function cP(err,result) {
             console.log("CONVERSATION_NEW_POST-1 "+err+" "+result);
             //technically, this should return to "/" since Lucene is not ready to display
             // the new post; you have to refresh the page in any case
