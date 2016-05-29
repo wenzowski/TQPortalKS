@@ -32,7 +32,7 @@ exports.plugin = function(app, environment) {
             usx = helpers.getUser(req),
             credentials = usx.uRole;
 
-        WikiModel.fillDatatable(start, count, userId, userIP, sToken, function blogFill(data, countsent, totalavailable) {
+        WikiModel.fillDatatable(start, count, userId, userIP, sToken, function wikiFill(err, data, countsent, totalavailable) {
             console.log("Wiki.index " + data);
             var cursor = start + countsent,
                 json = environment.getCoreUIData(req);
@@ -41,7 +41,7 @@ exports.plugin = function(app, environment) {
             json.start = cursor;
             json.count = Constants.MAX_HIT_COUNT; //pagination size
             json.total = totalavailable;
-            json.table = data;
+            json.cargo = data.cargo;
             return res.render("wikiindex", json);
         });
     });

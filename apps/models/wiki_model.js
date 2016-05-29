@@ -1,8 +1,10 @@
 /**
  * Created by park on 11/16/2015.
  */
+var Constants = require("../constants"),
+    WikiModel;
 
-var WikiModel =  module.exports = function(environment) {
+WikiModel =  module.exports = function(environment) {
     var self = this,
         topicDriver = environment.getTopicDriver();
     console.log("Wiki "+topicDriver);
