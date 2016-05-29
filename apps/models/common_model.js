@@ -412,6 +412,7 @@ var CommonModel =  module.exports = function(environment) {
      * @param label
      * @param details
      * @param language
+     * @param url  for reference nodes
      * @param largeImagePath
      * @param smallImagePath
      * @param isPrivate
@@ -421,11 +422,14 @@ var CommonModel =  module.exports = function(environment) {
      * @param callback signature (err, rslt)
      */
     self.createConversationNode = function(typeLocator, parentLocator, contextLocator, userId, label, details, language,
-                                           largeImagePath, smallImagePath, isPrivate, jsonPivots,
+                                           url, largeImagePath, smallImagePath, isPrivate, jsonPivots,
                                             userIP, sToken, callback) {
         console.log("C_MCreateConNode "+typeLocator+" | "+largeImagePath+" | "+smallImagePath);
         var jsonT = createNewInstanceTopic(null, typeLocator, userId, label, details, language,
             largeImagePath, smallImagePath, isPrivate);
+        if (url !== null && url !== "") {
+          jsonT.url = url;
+        }
         if (parentLocator !== null && parentLocator !== "") {
             var extras = {};
             var kid = childStruct(contextLocator, parentLocator);

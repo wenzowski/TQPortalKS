@@ -10,14 +10,24 @@ var ConversationModel =  module.exports = function(environment) {
     console.log("Conversation "+topicDriver);
 
     function getSmallIcon(nodeType) {
-        var result = "";
-        //TODO
+        var result = Constants.MAP_SM;//default
+        if (nodeType === Constants.ISSUE_TYPE) {return Constants.ISSUE_SM;}
+        if (nodeType === Constants.POSITION_TYPE) {return Constants.POSITION_SM;}
+        if (nodeType === Constants.PRO_TYPE) {return Constants.PRO_SM;}
+        if (nodeType === Constants.CON_TYPE) {return Constants.CON_SM;}
+        if (nodeType === Constants.NOTE_TYPE) {return Constants.NOTE_SM;}
+        if (nodeType === Constants.REFERENCE_TYPE) {return Constants.REFERENCE_SM;}
         return result;
     };
 
     function getLargeIcon(nodeType) {
-        var result = "";
-        //TODO
+        var result = Constants.MAP; //default
+        if (nodeType === Constants.ISSUE_TYPE) {return Constants.ISSUE;}
+        if (nodeType === Constants.POSITION_TYPE) {return Constants.POSITION;}
+        if (nodeType === Constants.PRO_TYPE) {return Constants.PRO;}
+        if (nodeType === Constants.CON_TYPE) {return Constants.CON;}
+        if (nodeType === Constants.NOTE_TYPE) {return Constants.NOTE;}
+        if (nodeType === Constants.REFERENCE_TYPE) {return Constants.REFERENCE;}
         return result;
     };
 
@@ -44,7 +54,8 @@ var ConversationModel =  module.exports = function(environment) {
             lang = json.language,
             nodeType = json.nodetype;
         if (!lang) { lang = "en";}
-        CommonModel.createConversationNode(json.nodetype, json.locator, json.context, userId, json.title, json.body, lang,
+        CommonModel.createConversationNode(nodeType, json.parentlocator, json.context,
+            userId, json.title, json.body, lang, json.url,
             getLargeIcon(nodeType), getSmallIcon(nodeType), isPrivate, pivots,
             userIP, sToken, function umC(err, rslt) {
                 return callback(err, rslt);

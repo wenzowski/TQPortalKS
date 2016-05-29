@@ -80,6 +80,7 @@ exports.plugin = function(app, environment) {
                 return res.render("ctopic", data);
             });
         } else {
+          console.log("FOOIE "+q);
             //That's not good!
             //TODO
         }
@@ -92,10 +93,10 @@ exports.plugin = function(app, environment) {
         var query = req.query,
             data =  environment.getCoreUIData(req);
         data.formtitle = "New Conversation";
-        data.nodeicon = "/images/ibis/map.png";
+        data.nodeicon = Constants.MAP;
         data.nodeType = Constants.CONVERSATION_MAP_TYPE;
         data.isNotEdit = true;
-        data.url = query.url;
+        data.url = query.url; //TODO likely not for here, for bookmarks
         data.title = query.title;
         data.action = "/conversation/new";
         return res.render("conversationform", data); //,
@@ -123,52 +124,74 @@ exports.plugin = function(app, environment) {
     //  /newquestion/<someId>?contextLocator=<somecontextlocator>
     /////////////////////////////////////
     app.get("/newquestion/:id", helpers.isLoggedIn, function(req, res) {
-        var q = req.params.id,
-            contextLocator = req.query.contextLocator;
-        console.log("NEWQUESTION "+q+" "+contextLocator);
-        //TODO
+        var q = req.params.id, //parent locator
+            contextLocator = req.query.contextLocator, // context loator
+            data =  environment.getCoreUIData(req);
+        data.formtitle = "New Question";
+        data.nodeicon = Constants.ISSUE;
+        data.nodeType = Constants.ISSUE_TYPE;
+        data.parent = q;
+        data.context = contextLocator;
+        data.isNotEdit = true;
+        data.action = "/conversation/new";
+        return res.render("conversationform", data); //,
+
     });
 
     app.get("/newanswer/:id", helpers.isLoggedIn, function(req, res) {
-        var q = req.params.id,
-            contextLocator = req.query.contextLocator;
-        console.log("NEWANSWER "+q+" "+contextLocator);
-        if (q) {
-            var userId = req.session[Constants.USER_ID],
-                theUser = req.session[Constants.THE_USER],
-                userIP = "",
-                sToken = req.session[Constants.SESSION_TOKEN];
-            CommonModel.fetchTopic(q, userId, userIP, sToken, function bFT(err, rslt) {
-                var data =  environment.getCoreUIData(req);
-                if (rslt.cargo) {
-                    //TODO ??? will populateTopic understand the need for MillerColumn?
-                    data = CommonModel.populateTopic(rslt.cargo, theUser, data);
-                }
-                data.locator = q;
-                return res.render("ctopic", data);
-            });
-        } else {
-            //That's not good!
-            //TODO
-        }
+      var q = req.params.id, //parent locator
+          contextLocator = req.query.contextLocator, // context loator
+          data =  environment.getCoreUIData(req);
+      data.formtitle = "New Answer";
+      data.nodeicon = Constants.POSITION;
+      data.nodeType = Constants.POSITION_TYPE;
+      data.parent = q;
+      data.context = contextLocator;
+      data.isNotEdit = true;
+      data.action = "/conversation/new";
+      return res.render("conversationform", data); //,
+
     });
     app.get("/newpro/:id", helpers.isLoggedIn, function(req, res) {
-        var q = req.params.id,
-            contextLocator = req.query.contextLocator;
-        console.log("NEWPRO "+q+" "+contextLocator);
-        //TODO
+      var q = req.params.id, //parent locator
+          contextLocator = req.query.contextLocator, // context loator
+          data =  environment.getCoreUIData(req);
+      data.formtitle = "New Pro Argument";
+      data.nodeicon = Constants.PRO;
+      data.nodeType = Constants.PRO_TYPE;
+      data.parent = q;
+      data.context = contextLocator;
+      data.isNotEdit = true;
+      data.action = "/conversation/new";
+      return res.render("conversationform", data); //,
     });
+
     app.get("/newcon/:id", helpers.isLoggedIn, function(req, res) {
-        var q = req.params.id,
-            contextLocator = req.query.contextLocator;
-        console.log("NEWCON "+q+" "+contextLocator);
-        //TODO
+      var q = req.params.id, //parent locator
+          contextLocator = req.query.contextLocator, // context loator
+          data =  environment.getCoreUIData(req);
+      data.formtitle = "New Con Argument";
+      data.nodeicon = Constants.CON;
+      data.nodeType = Constants.CON_TYPE;
+      data.parent = q;
+      data.context = contextLocator;
+      data.isNotEdit = true;
+      data.action = "/conversation/new";
+      return res.render("conversationform", data); //,
     });
     app.get("/newreference/:id", helpers.isLoggedIn, function(req, res) {
-        var q = req.params.id,
-            contextLocator = req.query.contextLocator;
-        console.log("NEWREFERENCE "+q+" "+contextLocator);
-        //TODO
+      var q = req.params.id, //parent locator
+          contextLocator = req.query.contextLocator, // context loator
+          data =  environment.getCoreUIData(req);
+      data.formtitle = "New Reference";
+      data.nodeicon = Constants.REFERENCE;
+      data.nodeType = Constants.REFERENCE_TYPE;
+      data.isURL = true;
+      data.parent = q;
+      data.context = contextLocator;
+      data.isNotEdit = true;
+      data.action = "/conversation/new";
+      return res.render("conversationform", data); //,
     });
 
     /**
