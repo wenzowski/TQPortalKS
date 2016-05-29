@@ -39,7 +39,7 @@ exports.plugin = function(app, environment) {
         var userId= "",
             userIP= "",
             sToken= null,
-            usx = helpers.getUser();
+            usx = helpers.getUser(req);
             credentials = usx.uRole;
 
         ConversationModel.fillDatatable(start, count, userId, userIP, sToken, function blogFill(err, data, countsent, totalavailable) {
@@ -69,7 +69,7 @@ exports.plugin = function(app, environment) {
                 var data =  environment.getCoreUIData(req);
                 if (rslt.cargo) {
                     //TODO populateConversationTopic
-                    data = CommonModel.populateTopic(rslt.cargo, theUser);
+                    data = CommonModel.populateTopic(rslt.cargo, theUser, data);
                 }
                 data.locator = q;
                 if (contextLocator && contextLocator !== "") {
@@ -93,7 +93,7 @@ exports.plugin = function(app, environment) {
             data =  environment.getCoreUIData(req);
         data.formtitle = "New Conversation";
         data.nodeicon = "/images/ibis/map.png";
-        data.nodetype = Constants.CONVERSATION_MAP_TYPE;
+        data.nodeType = Constants.CONVERSATION_MAP_TYPE;
         data.isNotEdit = true;
         data.url = query.url;
         data.title = query.title;
@@ -142,7 +142,7 @@ exports.plugin = function(app, environment) {
                 var data =  environment.getCoreUIData(req);
                 if (rslt.cargo) {
                     //TODO ??? will populateTopic understand the need for MillerColumn?
-                    data = CommonModel.populateTopic(rslt.cargo);
+                    data = CommonModel.populateTopic(rslt.cargo, theUser, data);
                 }
                 data.locator = q;
                 return res.render("ctopic", data);
@@ -193,7 +193,7 @@ exports.plugin = function(app, environment) {
      * Function which ties the app-embedded route back to here
      */
     var _consupport = function(json, isPrivate, userId, userIP, sToken,  callback) {
-        if (body.locator === "") {
+        if (json.locator === "") {
             ConversationModel.create(json, isPrivate, userId, userIP, sToken, function blsA(err, result) {
                 return callback(err, result);
             });
@@ -211,9 +211,10 @@ exports.plugin = function(app, environment) {
         var body = req.body,
             userId = req.session[Constants.USER_ID],
             userIP = "",
-            sToken = req.session[Constants.SESSION_TOKEN];
+            sToken = req.session[Constants.SESSION_TOKEN],
+            isPrivate = false; //TODO
         console.log("CONVERSATION_NEW_POST "+JSON.stringify(body));
-        _consupport(body, userId, userIP, sToken, function cP(err,result) {
+        _consupport(body, isPrivate, userId, userIP, sToken, function cP(err,result) {
             console.log("CONVERSATION_NEW_POST-1 "+err+" "+result);
             //technically, this should return to "/" since Lucene is not ready to display
             // the new post; you have to refresh the page in any case

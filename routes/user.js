@@ -44,13 +44,15 @@ exports.plugin = function(app, environment) {
             CommonModel.fetchTopic(q, userId, userIP, sToken, function uFT(err, rslt) {
                 var data =  environment.getCoreUIData(req);
                 if (rslt.cargo) {
-                    data = CommonModel.populateTopic(rslt.cargo, theUser);
+                    data = CommonModel.populateTopic(rslt.cargo, theUser, data);
                 }
                 return res.render("topic", data);
             });
         } else {
             //That's not good!
-            //TODO
+            //TODO  alert stuff
+            console.log("DANG "+q);
+
         }
     });
 };

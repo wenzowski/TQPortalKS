@@ -26,22 +26,23 @@ var ConversationModel =  module.exports = function(environment) {
     // API
     /////////////////////////////
     self.fillDatatable = function(start, count, userId, userIP, sToken, callback) {
-        console.log("BookmarkModel.fillDatatable "+userId);
+        console.log("BConversationModel.fillDatatable "+userId);
         topicDriver.listInstanceTopics(Constants.CONVERSATION_MAP_TYPE, start, count, userId, userIP, sToken, function bmF(err, rslt) {
-            console.log("LISTbookmarks "+err+" | "+JSON.stringify(rslt));
+            console.log("LISTConversations "+err+" | "+JSON.stringify(rslt));
             return callback(err, rslt, 0, 0);
         })
     };
 
     self.create = function(json, isPrivate, userId, userIP, sToken, callback) {
-        console.log("BOOKMARK_MODEL_NEW_POST "+JSON.stringify(json)+" | "+JSON.stringify(userId));
+        console.log("CONVERSATION_MODEL_NEW_POST "+JSON.stringify(json)+" | "+JSON.stringify(userId));
         //BLOG_MODEL_NEW_POST {"locator":"","title":"My First Official Blog Post","body":"
         //Yup","tag1":"","tag2":"","tag3":"","tag4":""} | "jackpark"
         //locator, typeLocator, userId, label,
         //details, language, largeImagePath, smallImagePath,
         //    isPrivate, jsonPivots, userIP,sToken,
         var pivots = CommonModel.jsonBallToPivots(json),
-            lang = json.language;
+            lang = json.language,
+            nodeType = json.nodetype;
         if (!lang) { lang = "en";}
         CommonModel.createConversationNode(json.nodetype, json.locator, json.context, userId, json.title, json.body, lang,
             getLargeIcon(nodeType), getSmallIcon(nodeType), isPrivate, pivots,

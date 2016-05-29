@@ -36,7 +36,7 @@ exports.plugin = function(app, environment) {
         var userId= "",
             userIP= "",
             sToken= null,
-            usx = helpers.getUser(),
+            usx = helpers.getUser(req),
             credentials = usx.uRole;
 
         BlogModel.fillDatatable(start, count, userId, userIP, sToken, function blogFill(err, data, countsent, totalavailable) {
@@ -66,7 +66,7 @@ exports.plugin = function(app, environment) {
                 var data =  environment.getCoreUIData(req);
                 if (rslt.cargo) {
                     CommonModel.populateConversationTopic(rslt.cargo, theUser, "/blog/", userIP, sToken,
-                                function bC(err, rslt) {
+                                data, function bC(err, rslt) {
                         data = rslt;
                         console.log("BOOBOO "+JSON.stringify(data));
                     });

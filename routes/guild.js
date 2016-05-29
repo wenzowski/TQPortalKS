@@ -7,7 +7,7 @@ var Constants = require("../apps/constants"),
 
 exports.plugin = function(app, environment) {
     var CommonModel = environment.getCommonModel(),
-        helpers = new Help(environment);
+        helpers = new Help(environment),
         GuildModel = new Gm(environment);
 
     console.log("Guild "+GuildModel);

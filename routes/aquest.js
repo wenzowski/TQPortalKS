@@ -11,7 +11,7 @@ exports.plugin = function(app, environment) {
         CommonModel = environment.getCommonModel(),
         helpers = new Help(environment);
 
-    console.log("Blog "+BlogModel);
+    console.log("Blog "+RpgModel);
 
     /////////////
     // Menu
@@ -27,5 +27,6 @@ exports.plugin = function(app, environment) {
     app.get("/rpg", helpers.isPrivate, function(req, res) {
       //TODO more
       var data = environment.getCoreUIData(req);
-      return res.render("rpg", json);
+      return res.render("rpg", data);
     });
+  };
