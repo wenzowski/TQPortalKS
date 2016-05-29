@@ -509,6 +509,7 @@ var CommonModel =  module.exports = function(environment) {
      * @callback signature (err, rslt)
      */
     self.populateConversationTopic = function(jsonTopic, user, app, userIP, sToken, data, callback) {
+      console.log("POPCONTOPIC- "+JSON.stringify(jsonTopic));
         var myResult = self.populateTopic(jsonTopic, user, data);
         console.log('POPCONTOPIC '+JSON.stringify(myResult));
         var contextLocator = jsonTopic.lox;//TODO

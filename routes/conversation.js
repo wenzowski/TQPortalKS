@@ -65,24 +65,28 @@ exports.plugin = function(app, environment) {
                 userIP = "",
                 theUser = helpers.getUser(req),
                 sToken = req.session[Constants.SESSION_TOKEN];
+
             CommonModel.fetchTopic(q, userId, userIP, sToken, function bFT(err, rslt) {
                 var data =  environment.getCoreUIData(req);
                 if (rslt.cargo) {
-                    //TODO populateConversationTopic
-                    data = CommonModel.populateTopic(rslt.cargo, theUser, data);
+                  //  //TODO populateConversationTopic
+                  //  data = CommonModel.populateTopic(rslt.cargo, theUser, data);
+                  CommonModel.populateConversationTopic(rslt.cargo, theUser, "/topic/", userIP, sToken,
+                              data, function bC(err, rslt) {
+                      data = rslt;
+                      console.log("BOOBOOBOO "+JSON.stringify(data));
+                  });
                 }
-                data.locator = q;
-                if (contextLocator && contextLocator !== "") {
-                    data.context = contextLocator;
-                } else {
-                    data.context = q; // we are talking about responding to this blog
-                }
+                helpers.checkContext(req, data);
+                helpers.checkTranscludes(req, data);
+
                 return res.render("ctopic", data);
             });
         } else {
           console.log("FOOIE "+q);
+          req.flash("error", "Cannot get "+q);
             //That's not good!
-            //TODO
+          res.redirect("/");
         }
     });
     /**
@@ -105,17 +109,35 @@ exports.plugin = function(app, environment) {
     /**
      * Capture <code>id</code> and save to Session for later transclusion
      */
-    app.get("/conversationtransclude/:id", helpers.isLoggedIn, function(req, res) {
+    app.get("/remember/:id", helpers.isLoggedIn, function(req, res) {
         var q = req.params.id;
-        //TODO
+        req.session.transclude = q;
+        req.flash("error", "Transclusion remembered");
+        return res.redirect("/");
+    });
+
+    /**
+     * Transclude a remembered topic
+     */
+    app.get("/transclude/:id", helpers.isLoggedIn, function(req, res) {
+        var q = req.params.id;
+        console.log("TRANSCLUDING "+q);
+        return res.redirect("/");
+    });
+    app.get("/transcludeevidence/:id", helpers.isLoggedIn, function(req, res) {
+        var q = req.params.id;
+        console.log("TRANSCLUDINGEVIDENCE "+q);
+        return res.redirect("/");
     });
 
     /**
      * Capture <code>id</code> and save to Session for later transclusion as evidence
      */
-    app.get("/conversationtranscludeevidence/:id", helpers.isLoggedIn, function(req, res) {
+    app.get("/rememberevidence/:id", helpers.isLoggedIn, function(req, res) {
         var q = req.params.id;
-        //TODO
+        req.session.tevidence = q;
+        req.flash("error", "Transcled evidence remembered");
+        return res.redirect("/");
     });
 
     ////////////////////////////////////

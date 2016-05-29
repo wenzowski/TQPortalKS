@@ -29,6 +29,7 @@ var TopicDriver =  module.exports = function(environment) {
             query = queryUtil.getCoreQuery(verb, userId, userIP, sToken);
         query.lox = locator;
         httpClient.get(urx, query, function tdLUT(err, rslt) {
+          //NOTE returns { cargo: <thenode>}
             return callback(err, rslt);
         });
     };

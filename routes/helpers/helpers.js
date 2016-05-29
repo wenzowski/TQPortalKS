@@ -56,6 +56,27 @@ Helpers = function (environment) {
         }
         return result;
     };
+
+    self.checkTranscludes = function(req, data) {
+      var transclusion = req.session.transclude,
+          evidence = req.session.tevidence;
+      if (transclusion !== null && transclusion !== "") {
+        data.transcludelocator = transclusion;
+      } else if (evidence !== null && evidence !== "") {
+        data.transcludeevidencelocator = evidence;
+      }
+    };
+
+    self.checkContext = function(req, data) {
+      var contextLocator = req.query.contextLocator,
+          q = req.params.id;
+          data.locator = q;
+          if (contextLocator && contextLocator !== "") {
+              data.context = contextLocator;
+          } else {
+              data.context = q; // we are talking about responding to this blog
+          }
+    };
 };
 
 module.exports = Helpers;

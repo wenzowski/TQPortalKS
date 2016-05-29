@@ -44,14 +44,14 @@ var MillerColumn = module.exports = function(environment) {
      * @param rootNodeLocator
      */
     function __makeNodeHTML(node, language, javascript, app, aux, buf, contextLocator, rootNodeLocator) {
-   //     console.log("ColNavWidget.__makeNodeHTML "+JSON.stringify(node)+" "+buf);
+        console.log("ColNavWidget.__makeNodeHTML "+JSON.stringify(node)+" "+buf);
         //TODO modify this to deal with JSON
         buf.append("<li id=\""+node.lox+"\"><a class=\"nodehref\" href=\"");
         var query = javascript+"('"+node.lox+"', '"+app+node.lox+"?contextLocator="+contextLocator+"&rootLocator="+rootNodeLocator+"&language="+language+aux+"')\"";        buf.append(query+" ondblclick =\"doDoubleClick();\">");
         buf.append("<img src=\""+node.sIco+"\" class=\"nodeimg\"> ");
         title = node.label; //TODO getLabel(constants.ENGLISH);
         if (!title) {
-            title = node.details.theText; //TODO getSubject(constants.ENGLISH).theText;
+            title = node.details[0]; //TODO getSubject(constants.ENGLISH).theText;
         }
         buf.append("<span class='nodetitle'>"+title+"</span></a>"); // leave off trailing </li>
 //		console.log("ColNavWidget.__makeNodeHTML+ "+node.getLocator()+" "+buf);
@@ -109,7 +109,7 @@ var MillerColumn = module.exports = function(environment) {
                         if (err) {error+=err;}
                         if (node) {
 //						console.log("ColNavWidget.__buildColNav-5 "+stop+" | "+err+" | "+node);
-                            __buildColNav(rootNodeLocator, node, selectedNode, contextLocator, language,
+                            __buildColNav(rootNodeLocator, node.cargo, selectedNode, contextLocator, language,
                                 javascript, app, aux, buf, userId, userIP, sToken, stop, function mcB1(err,html) {
                                 if (err) {error+=err;}
                                 loop();
@@ -167,7 +167,7 @@ var MillerColumn = module.exports = function(environment) {
             topicDriver.grabTopic(rootNodeLocator, userId, userIP, sToken, function widgetMGetNode1(err, node) {
                 console.log("ColNavWidget.makeColNav-2 "+rootNodeLocator+" | "+node+" | "+selectedNode);
                 if (node) {
-                    __buildColNav(rootNodeLocator, node, selectedNode, contextLocator, language, javascript,
+                    __buildColNav(rootNodeLocator, node.cargo, selectedNode, contextLocator, language, javascript,
                         app, aux, buffer, userId, userIP, sToken, false, function widgetMBuildColNav1(err, html) {
                         //					console.log("ColNavWidget.makeColNav-2 "+html);
                         buffer.append("</li>");

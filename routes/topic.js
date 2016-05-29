@@ -17,14 +17,14 @@ exports.plugin = function(app, environment) {
     /////////////
 
     app.get("/topic/:id", helpers.isPrivate, function(req, res) {
-      var q = req.params.id,
-          contextLocator = req.query.contextLocator;
+      var q = req.params.id;
       console.log("GETTOPIC "+q);
       if (q) {
           var userId = req.session[Constants.USER_ID],
               theUser = helpers.getUser(req);
               userIP = "",
               sToken = req.session[Constants.SESSION_TOKEN];
+
           CommonModel.fetchTopic(q, userId, userIP, sToken, function bFT(err, rslt) {
               var data =  environment.getCoreUIData(req);
               if (rslt.cargo) {
@@ -35,12 +35,9 @@ exports.plugin = function(app, environment) {
                   });
               }
               //TODO else flash error
-              data.locator = q;
-              if (contextLocator && contextLocator !== "") {
-                  data.context = contextLocator;
-              } else {
-                  data.context = q; // we are talking about responding to this blog
-              }
+              helpers.checkContext(req, data);
+              helpers.checkTranscludes(req, data);
+
               return res.render("ctopic", data);
           });
       } else {
