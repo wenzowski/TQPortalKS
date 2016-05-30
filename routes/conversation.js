@@ -65,7 +65,11 @@ exports.plugin = function(app, environment) {
                 userIP = "",
                 theUser = helpers.getUser(req),
                 sToken = req.session[Constants.SESSION_TOKEN];
-
+///////////////////////////////
+//TODO
+// THIS entire section is subject to revision as the
+// ConversationWidget is spliced in -- or all this code is replaced
+///////////////////////////////
             CommonModel.fetchTopic(q, userId, userIP, sToken, function bFT(err, rslt) {
                 var data =  environment.getCoreUIData(req);
                 if (rslt.cargo) {

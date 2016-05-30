@@ -29,54 +29,7 @@
                 </div>
                 <div class="transclude"></div>
             </div> <!-- /col 8 -->
-            <div class="col-xs-4 col-sm-4">
-                {{#if showTags}}
-                    <h3>Tags</h3>
-                    <div class="taglist pre-scrollable">
-                        {{#each tags}}
-                            <a href="/tag/{{lox}}"><img src="{{sIco}}"> {{label}}</a><br/>
-                        {{/each}}
-                    </div>
-                {{/if}}
-                {{#if showUsers}}
-                    <h3>Users</h3>
-                    <div class="userlist pre-scrollable">
-                        {{#each users}}
-                            <a href="/user/{{lox}}"><img src="{{sIco}}"> {{label}}</a><br/>
-                        {{/each}}
-                    </div>
-                {{/if}}
-                {{#if showDocs}}
-                    <h3>Documents</h3>
-                    <div class="doclist pre-scrollable">
-                        {{#each documents}} <!-- TODo: we are punting to Topic display -->
-                            {{#if isBlogType}}
-                                <a href="/blog/{{lox}}"><img src="{{sIco}}"> {{label}}</a><br/>
-                            {{else}}
-                                {{#if isWikiType}}
-                                    <a href="/wiki/{{lox}}"><img src="{{sIco}}"> {{label}}</a><br/>
-                                {{else}}
-                                    {{#if isBookmark}}
-                                        <a href="/bookmark/{{lox}}"><img src="{{sIco}}"> {{label}}</a><br/>
-                                    {{else}}
-                                        <a href="/topic/{{lox}}"><img src="{{sIco}}"> {{label}}</a><br/>
-                                    {{/if}}
-                                {{/if}}
-                            {{/if}}
-                        {{/each}}
-                    </div>
-                {{/if}}
-                {{#if showTranscludes}}
-                    <h3>Transcludes</h3>
-                    <div class="transcludelist pre-scrollable">
-                        {{#each transcludes}} <!-- TODo: we are punting to Topic display -->
-
-                            <a href="/topic/{{lox}}"><img src="{{sIco}}"> {{label}}</a><br/>
-                        {{/each}}
-
-                    </div>
-                {{/if}}
-            </div> <!-- /col 4 -->
+            {{> pivots}}
         </div> <!-- /row -->
     </div> <!-- /topic -->
     <div id="list" class="tab-pane fade">
@@ -89,39 +42,7 @@
                 <div class="urlref"><a href="{{url}}">{{url}}</a></div>
             </p>
             <div class="body pre-scrollable" style="border: 1px solid #e1e1e8;">{{{details}}}</div>
-            {{#if showTags}}
-                <h3>Tags</h3>
-                <div class="taglist pre-scrollable">
-                    {{#each tags}}
-                        <a href="/tag/{{lox}}"><img src="{{sIco}}"> {{label}}</a><br/>
-                    {{/each}}
-                </div>
-            {{/if}}
-            {{#if showUsers}}
-                <h3>Users</h3>
-                <div class="userlist pre-scrollable">
-                    {{#each users}}
-                        <a href="/user/{{lox}}"><img src="{{sIco}}"> {{label}}</a><br/>
-                    {{/each}}
-                </div>
-            {{/if}}
-            {{#if showDocs}}
-                <h3>Documents</h3>
-                <div class="doclist pre-scrollable">
-                    {{#each documents}} <!-- TODo: we are punting to Topic display -->
-                        <a href="/topic/{{lox}}"><img src="{{sIco}}"> {{label}}</a><br/>
-                    {{/each}}
-                </div>
-            {{/if}}
-            {{#if showTranscludes}}
-                <h3>Transclusions</h3>
-                <div class="transcludelist pre-scrollable">
-                    {{#each transcludes}} <!-- TODo: we are punting to Topic display -->
-                        <a href="/topic/{{lox}}"><img src="{{sIco}}"> {{label}}</a><br/>
-                    {{/each}}
-
-                </div>
-            {{/if}}
+            {{> pivots}}
         </div>
     </div> <!-- /list -->
     <div id="cconv" class="tab-pane fade">
