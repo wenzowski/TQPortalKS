@@ -15,6 +15,25 @@
             {{/each}}
         </div>
     {{/if}}
+    <!-- Guild Members -->
+    {{#if showMembers}}
+        <div class="userlist pre-scrollable">
+            <h3>Members</h3>
+            {{#each members}}
+                <a href="/user/{{lox}}"><img src="{{sIco}}"> {{label}}</a><br/>
+            {{/each}}
+        </div>
+    {{/if}}
+    <!-- Guild Quests -->
+    {{#if showQuests}}
+        <div class="userlist pre-scrollable">
+            <h3>Quests</h3>
+            {{#each quests}}
+                <a href="/quest/{{lox}}"><img src="{{sIco}}"> {{label}}</a><br/>
+            {{/each}}
+        </div>
+    {{/if}}
+
     {{#if showDocs}}
         <div class="doclist pre-scrollable">
             <h3>Documents</h3>

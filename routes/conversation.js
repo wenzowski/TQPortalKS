@@ -36,7 +36,7 @@ exports.plugin = function(app, environment) {
         }
         console.log("Conversation "+start+" "+count);
 
-        var userId= "",
+        var userId= helpers.getUserId(req),
             userIP= "",
             sToken= null,
             usx = helpers.getUser(req);
@@ -61,7 +61,7 @@ exports.plugin = function(app, environment) {
             contextLocator = req.query.contextLocator;
         console.log("GETCON "+q);
         if (q) {
-            var userId = req.session[Constants.USER_ID],
+            var userId = helpers.getUserId(req), //req.session[Constants.USER_ID],
                 userIP = "",
                 theUser = helpers.getUser(req),
                 sToken = req.session[Constants.SESSION_TOKEN];
@@ -258,7 +258,7 @@ exports.plugin = function(app, environment) {
      */
     app.post("/conversation/new", helpers.isLoggedIn, function(req, res) {
         var body = req.body,
-            userId = req.session[Constants.USER_ID],
+            userId = helpers.getUserId(req), //req.session[Constants.USER_ID],
             userIP = "",
             sToken = req.session[Constants.SESSION_TOKEN],
             isPrivate = false; //TODO

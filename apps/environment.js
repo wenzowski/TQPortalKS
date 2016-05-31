@@ -13,6 +13,8 @@ var Req = require("./models/drivers/http_request"),
     Tag = require("./models/tag_model"),
     Srch = require("./models/search_model"),
     Usr = require("./models/user_model"),
+    Gm = require("./models/guild_model"),
+    Qm = require("./models/quest_model"),
     Wiki = require("./models/wiki_model"),
     Tdrvr = require("./models/drivers/topic_driver"),
     Udrvr = require("./models/drivers/user_driver"),
@@ -38,6 +40,8 @@ var Environment = function() {
          tagModel,
          userModel,
          wikiModel,
+         questModel,
+         guildModel,
          searchModel,
          topicDriver,
          userDriver,
@@ -73,6 +77,8 @@ var Environment = function() {
         tagModel = new Tag(this);
         userModel = new Usr(this);
         wikiModel = new Wiki(this);
+        questModel = new Qm(this);
+        guildModel = new Gm(this);
         searchModel = new Srch(this);
         fs.readFile(path, function environmentReadConfig(err, configfile) {
             configProperties = JSON.parse(configfile);
@@ -199,6 +205,14 @@ var Environment = function() {
 
     self.getWikiModel = function() {
         return wikiModel;
+    };
+
+    self.getQuestModel = function() {
+      return questModel;
+    };
+
+    self.getGuildModel = function() {
+      return guildModel;
     };
 
     self.getConversationModel = function() {

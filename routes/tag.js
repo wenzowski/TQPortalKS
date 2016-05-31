@@ -28,7 +28,7 @@ exports.plugin = function(app, environment) {
         }
         console.log("BLOGS "+start+" "+count);
 
-        var userId= "",
+        var userId= helpers.getUserId(req),
             userIP= "",
             sToken= null,
             usx = helpers.getUser(req),
@@ -52,7 +52,7 @@ exports.plugin = function(app, environment) {
         var q = req.params.id;
         console.log("GETTAG "+q);
         if (q) {
-            var userId = req.session[Constants.USER_ID],
+            var userId = helpers.getUserId(req), //req.session[Constants.USER_ID],
                 userIP = "",
                 theUser = helpers.getUser(req),
                 sToken = req.session[Constants.SESSION_TOKEN];
@@ -65,7 +65,8 @@ exports.plugin = function(app, environment) {
             });
         } else {
             //That's not good!
-            //TODO
+            req.flash("error", "Cannot get "+q);
+            res.redirect("/");
         }
     });
 };

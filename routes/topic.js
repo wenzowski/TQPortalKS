@@ -20,8 +20,8 @@ exports.plugin = function(app, environment) {
       var q = req.params.id;
       console.log("GETTOPIC "+q);
       if (q) {
-          var userId = req.session[Constants.USER_ID],
-              theUser = helpers.getUser(req);
+          var userId = helpers.getUserId(req), //req.session[Constants.USER_ID],
+              theUser = helpers.getUser(req),
               userIP = "",
               sToken = req.session[Constants.SESSION_TOKEN];
 

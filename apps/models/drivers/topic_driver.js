@@ -151,6 +151,7 @@ var TopicDriver =  module.exports = function(environment) {
 
     self.submitNewInstanceTopic = function(jsonTopic, userId, userIP, sToken, callback) {
         console.log("SubmitNewInstanceTopic "+jsonTopic+" "+userId+" "+userIP+" "+sToken);
+//SubmitNewInstanceTopic [object Object] undefined [object Object] caccec2d-ff37-4f13-a622-d4a119f08467
         var urx = '/tm/',
             verb = Constants.NEW_INSTANCE_TOPIC,
             query = queryUtil.getCoreQuery(verb, userId, userIP, sToken);

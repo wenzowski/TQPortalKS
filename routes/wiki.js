@@ -26,7 +26,7 @@ exports.plugin = function(app, environment) {
     app.get("/wiki", helpers.isPrivate, function (req, res) {
         var start = parseInt(req.query.start),
             count = parseInt(req.query.count),
-            userId = "",
+            userId = helpers.getUserId(req),
             userIP = "",
             sToken = null,
             usx = helpers.getUser(req),
@@ -51,7 +51,7 @@ exports.plugin = function(app, environment) {
             contextLocator = req.query.contextLocator;
         console.log("GETWIKI"+q);
         if (q) {
-            var userId = req.session[Constants.USER_ID],
+            var userId = helpers.getUserId(req), //req.session[Constants.USER_ID],
                 userIP = "",
                 theUser = helpers.getUser(req),
                 sToken = req.session[Constants.SESSION_TOKEN];
@@ -71,7 +71,8 @@ exports.plugin = function(app, environment) {
             });
         } else {
             //That's not good!
-            //TODO
+            req.flash("error", "Cannot get "+q);
+            res.redirect("/");
         }
     });
     /**
@@ -105,7 +106,7 @@ exports.plugin = function(app, environment) {
      */
     app.post("/wiki/new", helpers.isLoggedIn, function (req, res) {
         var body = req.body,
-            userId = req.session[Constants.USER_ID],
+            userId = helpers.getUserId(req), //req.session[Constants.USER_ID],
             userIP = "",
             sToken = req.session[Constants.SESSION_TOKEN];
         console.log("WIKI_NEW_POST " + JSON.stringify(body));

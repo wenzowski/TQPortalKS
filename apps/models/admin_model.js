@@ -183,8 +183,14 @@ var AdminModel =  module.exports = function(environment) {
         });
     };
 
-    self.updateUserRole = function(userId, roles, callback) {
-        userDriver.updateUserRole(userId, roles, function uaUrr(err, rslt) {
+    self.addUserRole = function(userId, newRole, callback) {
+        userDriver.addUserRole(userId, newRole, function uaUrr(err, rslt) {
+            return callback(err, rslt);
+        });
+    };
+
+    self.removeUserRole = function(userId, oldRole, callback) {
+        userDriver.removeUserRole(userId, oldRole, function urUrr(err, rslt) {
             return callback(err, rslt);
         });
     };

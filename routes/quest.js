@@ -2,13 +2,12 @@
  * Created by park on 5/28/2016.
  */
 var Constants = require("../apps/constants"),
-    Help = require("./helpers/helpers"),
-    Qm = require("../apps/models/quest_model");
+    Help = require("./helpers/helpers");
 
 exports.plugin = function(app, environment) {
     var CommonModel = environment.getCommonModel(),
         helpers = new Help(environment),
-        QuestModel = new Qm(environment);
+        QuestModel = environment.getQuestModel();
 
     console.log("Quest "+QuestModel);
 

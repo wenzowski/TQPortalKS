@@ -350,7 +350,7 @@ var CommonModel =  module.exports = function(environment) {
      */
     self.createTopicInstance = function(locator, typeLocator, userId, label,
                                         details, language, largeImagePath, smallImagePath,
-                                        isPrivate, url, jsonPivots, userIP,sToken, callback) {
+                                        isPrivate, url, jsonPivots, userIP, sToken, callback) {
         var jsonT = createNewInstanceTopic(null, typeLocator, userId, label, details, language,
                             largeImagePath, smallImagePath, isPrivate);
         if (url !== null) {

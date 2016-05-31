@@ -35,9 +35,10 @@ module.exports.REMOVE_INVITE =          "RemoveInvite";
 module.exports.EXISTS_INVITE =          "ExistsInvite";
 module.exports.LIST_INVITES =           "ListInvites";
 module.exports.UPDATE_ROLE =            "UpdUsRol";
+module.exports.REMOVE_ROLE		=         "RemUsRol";
 module.exports.UPDATE_EMAIL =           "UpdUsEma";
 module.exports.UPDATE_PASSWORD =        "UpdUsPwd";
-module.exports.UPDATE_USER_DATA		=   "UpdUsDat";
+module.exports.UPDATE_USER_DATA		=     "UpdUsDat";
 module.exports.LOAD_TREE =              "LoadTree";
 module.exports.GET_SEARCH_PARAMS =      "GetSearchParams";
 module.exports.LOGOUT =                 "LogOut";
@@ -133,6 +134,11 @@ module.exports.THEME =                  "/images/theme.png";
 module.exports.THEME_SM =               "/images/theme_sm.png";
 module.exports.LINK =                   "/images/link.png";
 module.exports.LINK_SM =                "/images/link_sm.png";
+module.exports.GUILD =                   "/images/game/guild.png";
+module.exports.GUILD_SM =                "/images/game/guild_sm.png";
+module.exports.QUEST =                   "/images/game/quest.png";
+module.exports.QUEST_SM =                "/images/game/quest_sm.png";
+
 module.exports.CHILD_NODE_LIST =        "cNL";
 //CREDENTIALS
 module.exports.ADMIN_CREDENTIALS        ="rar";

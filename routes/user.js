@@ -37,7 +37,7 @@ exports.plugin = function(app, environment) {
     app.get("/user/:id", helpers.isPrivate, function (req, res) {
         var q = req.params.id;
         if (q) {
-            var userId = req.session[Constants.USER_ID],
+            var userId = helpers.getUserId(req), //req.session[Constants.USER_ID],
                 userIP = "",
                 theUser = helpers.getUser(req),
                 sToken = req.session[Constants.SESSION_TOKEN];
@@ -52,7 +52,8 @@ exports.plugin = function(app, environment) {
             //That's not good!
             //TODO  alert stuff
             console.log("DANG "+q);
-
+            req.flash("error", "Cannot get "+q);
+            res.redirect("/");
         }
     });
 };

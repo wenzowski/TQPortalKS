@@ -1,5 +1,5 @@
 <div class="col-xs-12">
-  <img src=/images/guild.png" />
+  <img src=/images/game/guild.png" />
   <h2>{{label}}</h2>
   <ul class="nav nav-tabs">
       <li class="active"><a data-toggle="tab" href="#topic">Guild</a></li>
@@ -17,6 +17,14 @@
                 </div>
               </div>
               {{> pivots}}
+          </div>
+          <div class="row">
+            {{#if canJoin}}
+            <div class="form-group">
+                <a href="/joinguild/{{guildId}}"><button type="submit" class="btn btn-btn-success btn-small">Join Guild</button></a><br />
+            </div>
+
+            {{/if}}
           </div>
       </div>
       <div id="groom" class="tab-pane fade">

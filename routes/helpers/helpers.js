@@ -57,6 +57,10 @@ Helpers = function (environment) {
         return result;
     };
 
+    self.getUserId = function(req) {
+      return self.getUser(req).uName;
+    };
+
     self.checkTranscludes = function(req, data) {
       var transclusion = req.session.transclude,
           evidence = req.session.tevidence;

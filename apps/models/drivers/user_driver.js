@@ -220,13 +220,24 @@ var UserDriver =  module.exports = function(environment) {
      * @param jsonUserRole  a [] filled with roles
      * @param callback signature (err, rslt)
      */
-    self.updateUserRole = function(userId, jsonUserRole, callback) {
+    self.addUserRole = function(userId, jsonUserRole, callback) {
         var urx = '/admin/',
             verb = Constants.UPDATE_ROLE,
             query = queryUtil.getCoreQuery(verb, "SystemUser", '', null);
         query.uRole = jsonUserRole;
         query.uName = userId;
         console.log("UserDriver.updateUserRole "+JSON.stringify(query));
+        httpClient.post(urx, query, function udLI(err, rslt) {
+            return callback(err, rslt);
+        });
+    };
+    self.removeUserRole = function(userId, jsonUserRole, callback) {
+        var urx = '/admin/',
+            verb = Constants.REMOVE_ROLE,
+            query = queryUtil.getCoreQuery(verb, "SystemUser", '', null);
+        query.uRole = jsonUserRole;
+        query.uName = userId;
+        console.log("UserDriver.removeUserRole "+JSON.stringify(query));
         httpClient.post(urx, query, function udLI(err, rslt) {
             return callback(err, rslt);
         });
