@@ -2,9 +2,10 @@
  * Created by park on 11/16/2015.
  */
 var Qu = require('./query_util'),
-    Constants = require('../../constants');
+    Constants = require('../../constants'),
+    TopicDriver;
 
-var TopicDriver =  module.exports = function(environment) {
+TopicDriver =  module.exports = function(environment) {
     var self = this,
         httpClient = environment.getHttpClient(),
         queryUtil = new Qu();

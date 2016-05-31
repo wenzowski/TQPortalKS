@@ -1,9 +1,10 @@
 /**
  * Created by park on 11/16/2015.
  */
-var Constants = require("../constants");
+var Constants = require("../constants"),
+    UserModel;
 
-var UserModel =  module.exports = function(environment) {
+UserModel =  module.exports = function(environment) {
     var self = this,
         topicDriver = environment.getTopicDriver();
     console.log("User "+topicDriver);

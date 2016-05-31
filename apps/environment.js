@@ -19,6 +19,7 @@ var Req = require("./models/drivers/http_request"),
     Tdrvr = require("./models/drivers/topic_driver"),
     Udrvr = require("./models/drivers/user_driver"),
     fs = require("fs"),
+    Environment,
 //TODO defaults will be replaced by config.json values
     defaults = {
         server: {
@@ -27,10 +28,9 @@ var Req = require("./models/drivers/http_request"),
         }
     };
 
-var Environment = function() {
+Environment = function() {
      var self = this,
          configProperties,
-         httpClient,
          commonModel,
          adminModel,
          blogModel,
@@ -53,7 +53,15 @@ var Environment = function() {
          isInvitationOnly,
          theMessage,
          userEmail;
-    console.log("Envirionment starting "+httpClient);
+    var path = __dirname+"/../config/config.json";
+    configfile = fs.readFileSync(path);
+        configProperties = JSON.parse(configfile);
+        console.log("CONFIG "+JSON.stringify(configProperties));
+        backsideURL = "http://"+configProperties.backsideHost+":"+configProperties.backsidePort+"/";
+        isInvitationOnly = configProperties.invitationOnly;
+
+
+    console.log("Envirionment starting "+configProperties);
 
     /**
      *
@@ -61,10 +69,7 @@ var Environment = function() {
      */
     self.init = function(callback) {
         console.log("Environment initializing");
-        var path = __dirname+"/../config/config.json";
-        //read the config file
-         //boot in order of need
-        httpClient = new Req(defaults);
+        var err;
         topicDriver = new Tdrvr(this);
         userDriver = new Udrvr(this);
         //have drivers, now app models
@@ -80,16 +85,7 @@ var Environment = function() {
         questModel = new Qm(this);
         guildModel = new Gm(this);
         searchModel = new Srch(this);
-        fs.readFile(path, function environmentReadConfig(err, configfile) {
-            configProperties = JSON.parse(configfile);
-            console.log("CONFIG "+JSON.stringify(configProperties));
-            //configure HttpClient to talk to BacksideServlet
-            httpClient.init(configProperties.backsideHost, configProperties.backsidePort);
-            backsideURL = "http://"+configProperties.backsideHost+":"+configProperties.backsidePort+"/";
-            isInvitationOnly = configProperties.invitationOnly;
-            return callback(err);
-        });
-
+        return callback(err);
     };
 
     //////////////////////
@@ -160,7 +156,12 @@ var Environment = function() {
     };
 
     self.getHttpClient = function() {
-        return httpClient;
+      //Create a fresh client for each user
+      var result = new Req(defaults);
+      //configure HttpClient to talk to BacksideServlet
+      result.init(configProperties.backsideHost, configProperties.backsidePort);
+
+      return result;
     };
 
     self.getTopicDriver = function() {
@@ -219,7 +220,7 @@ var Environment = function() {
         return conversationModel;
     };
 
-    console.log("FOO "+self.getHttpClient());
+    console.log("FOO ");
 };
 
 module.exports = Environment;

@@ -217,25 +217,25 @@ var UserDriver =  module.exports = function(environment) {
     /**
      * for admins only
      * @param userId -- NOT the id of the logged in user; rather the user being updated
-     * @param jsonUserRole  a [] filled with roles
+     * @param newRole
      * @param callback signature (err, rslt)
      */
-    self.addUserRole = function(userId, jsonUserRole, callback) {
+    self.addUserRole = function(userId, newRole, callback) {
         var urx = '/admin/',
             verb = Constants.UPDATE_ROLE,
             query = queryUtil.getCoreQuery(verb, "SystemUser", '', null);
-        query.uRole = jsonUserRole;
+        query.uRole = newRole;
         query.uName = userId;
-        console.log("UserDriver.updateUserRole "+JSON.stringify(query));
+        console.log("UserDriver.addUserRole "+JSON.stringify(query));
         httpClient.post(urx, query, function udLI(err, rslt) {
             return callback(err, rslt);
         });
     };
-    self.removeUserRole = function(userId, jsonUserRole, callback) {
+    self.removeUserRole = function(userId, oldRole, callback) {
         var urx = '/admin/',
             verb = Constants.REMOVE_ROLE,
             query = queryUtil.getCoreQuery(verb, "SystemUser", '', null);
-        query.uRole = jsonUserRole;
+        query.uRole = oldRole;
         query.uName = userId;
         console.log("UserDriver.removeUserRole "+JSON.stringify(query));
         httpClient.post(urx, query, function udLI(err, rslt) {

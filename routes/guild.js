@@ -51,6 +51,24 @@ exports.plugin = function(app, environment) {
         return callback(err);
       });
     };
+
+    function removeMemberFromGuild(guildId, user, callback) {
+      console.log("REMOVEMEMBER "+guildId+" "+JSON.stringify(user));
+      var credentials = user.uRole;
+      if (Array.isArray(credentials)) {
+        credentials.push(guildId);
+      } else {
+        var c = [];
+        c.push(credentials);
+        c.push(guildId);
+        credentials = c;
+      }
+      user.uRole = credentials; //TODO set back in session?
+      AdminModel.removeUserRole(user.uName, guildId, function gA(err, rslt) {
+        console.log("REMOVEDMEMBER "+err);
+        return callback(err);
+      });
+    };
     // a Guild does not show on the Menu
     /////////////
     // Routes

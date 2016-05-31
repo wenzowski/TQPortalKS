@@ -2,9 +2,10 @@
  * Created by park on 11/16/2015.
  */
 var Constants = require('../constants'),
-    Mc = require('../widgets/millercolumn');
+    Mc = require('../widgets/millercolumn'),
+    CommonModel;
 
-var CommonModel =  module.exports = function(environment) {
+CommonModel =  module.exports = function(environment) {
     var self = this,
         topicDriver = environment.getTopicDriver(),
         MillerColumn = new Mc(environment),

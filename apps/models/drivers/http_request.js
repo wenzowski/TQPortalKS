@@ -4,9 +4,10 @@
  * @see https://www.npmjs.com/package/http-post
  */
 var http = require('http'),
-    post = require('http-post');
+    post = require('http-post'),
+    HttpClient;
 
-var HttpClient = function() {
+HttpClient = function() {
     var self = this,
         _host,
         _port,

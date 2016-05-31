@@ -1,7 +1,10 @@
 /**
  * Created by park on 11/27/2015.
  */
-var BlogModel =  module.exports = function(environment) {
+var Constants = require("../constants"),
+     SearchModel;
+
+SearchModel =  module.exports = function(environment) {
     var self = this,
         topicDriver = environment.getTopicDriver();
 

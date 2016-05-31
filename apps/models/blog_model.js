@@ -1,9 +1,10 @@
 /**
  * Created by park on 11/16/2015.
  */
-var Constants = require("../constants");
+var Constants = require("../constants"),
+    BlogModel;
 
-var BlogModel =  module.exports = function(environment) {
+BlogModel =  module.exports = function(environment) {
     var self = this,
         topicDriver = environment.getTopicDriver(),
         CommonModel = environment.getCommonModel();

@@ -1,9 +1,10 @@
 /**
  * Created by park on 12/31/2015.
  */
-var Constants = require("../constants");
+var Constants = require("../constants"),
+    BookmarkModel;
 
-var BookmarkModel =  module.exports = function(environment) {
+BookmarkModel =  module.exports = function(environment) {
     var self = this,
         topicDriver = environment.getTopicDriver(),
         CommonModel = environment.getCommonModel();
