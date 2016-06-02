@@ -24,8 +24,8 @@ exports.plugin = function(app, environment) {
      * GET wiki index
      */
     app.get("/wiki", helpers.isPrivate, function (req, res) {
-        var start = parseInt(req.query.start),
-            count = parseInt(req.query.count),
+        var start = helpers.validateNumber(parseInt(req.query.start)),
+            count = helpers.validateCount(parseInt(req.query.count)),
             userId = helpers.getUserId(req),
             userIP = "",
             sToken = null,
@@ -106,7 +106,7 @@ exports.plugin = function(app, environment) {
      */
     app.post("/wiki/new", helpers.isLoggedIn, function (req, res) {
         var body = req.body,
-            userId = helpers.getUserId(req), //req.session[Constants.USER_ID],
+            userId = helpers.getUserId(req),
             userIP = "",
             sToken = req.session[Constants.SESSION_TOKEN];
         console.log("WIKI_NEW_POST " + JSON.stringify(body));

@@ -100,7 +100,7 @@ CommonModel =  module.exports = function(environment) {
      * @return
      */
     function createNewConversationNode(typeLocator, parentLocator, userId, label,
-                                       details, language, largeImagePath, smallImagePath,isPrivate) {
+          details, language, largeImagePath, smallImagePath,isPrivate) {
        //TODO
     };
     /**
@@ -113,7 +113,8 @@ CommonModel =  module.exports = function(environment) {
      * @param sToken
      * @param callback signature (err, rslt)
      */
-    function processTagPivots(topicLocator, jsonPivots, language, userId, userIP, sToken, callback) {
+    function processTagPivots(topicLocator, jsonPivots, language, userId,
+          userIP, sToken, callback) {
         console.log('ProcessTagPivots- '+JSON.stringify(jsonPivots));
         var tags = [],
             tg,
@@ -140,7 +141,8 @@ CommonModel =  module.exports = function(environment) {
         }
         console.log('ProcessTagPivots+ '+JSON.stringify(tags));
         if (bf) {
-            topicDriver.findOrProcessTags(topicLocator, tags, language, userId, userIP, sToken, function cmPT(err, rslt) {
+            topicDriver.findOrProcessTags(topicLocator, tags, language, userId,
+                  userIP, sToken, function cmPT(err, rslt) {
                 return callback(err, rslt);
             });
         } else {
@@ -178,7 +180,7 @@ CommonModel =  module.exports = function(environment) {
                 shell = renderPivot(piv);
                 list.push(shell);
             }
-        };
+        }
         console.log("FOOTAG "+JSON.stringify(list));
         if (boox) {
             result = list;
@@ -371,7 +373,8 @@ CommonModel =  module.exports = function(environment) {
             //deal with pivots
             console.log("CommonModel.createTopicInstance "+lox+" | "+JSON.stringify(jsonPivots));
 
-                processTagPivots(lox, jsonPivots, language, userId, userIP, sToken, function cmCTP(erx, rslx) {
+                processTagPivots(lox, jsonPivots, language, userId, userIP,
+                      sToken, function cmCTP(erx, rslx) {
                     return callback(err + erx, x);
                 });
 
@@ -422,9 +425,9 @@ CommonModel =  module.exports = function(environment) {
      * @param sToken
      * @param callback signature (err, rslt)
      */
-    self.createConversationNode = function(typeLocator, parentLocator, contextLocator, userId, label, details, language,
-                                           url, largeImagePath, smallImagePath, isPrivate, jsonPivots,
-                                            userIP, sToken, callback) {
+    self.createConversationNode = function(typeLocator, parentLocator, contextLocator,
+          userId, label, details, language, url, largeImagePath, smallImagePath,
+          isPrivate, jsonPivots, userIP, sToken, callback) {
         console.log("C_MCreateConNode "+typeLocator+" | "+largeImagePath+" | "+smallImagePath);
         var jsonT = createNewInstanceTopic(null, typeLocator, userId, label, details, language,
             largeImagePath, smallImagePath, isPrivate);
@@ -509,17 +512,22 @@ CommonModel =  module.exports = function(environment) {
      * @param data core UI data
      * @callback signature (err, rslt)
      */
-    self.populateConversationTopic = function(jsonTopic, user, app, userIP, sToken, data, callback) {
+    self.populateConversationTopic = function(jsonTopic, user, app, userIP,
+          sToken, data, callback) {
       console.log("POPCONTOPIC- "+JSON.stringify(jsonTopic));
         var myResult = self.populateTopic(jsonTopic, user, data);
         console.log('POPCONTOPIC '+JSON.stringify(myResult));
         var contextLocator = jsonTopic.lox;//TODO
         var language = "en", //TODO
             aux = "";
+        ////////////////////////////
+        //POPULATE the MillerColumn
+        //TODO this requires a javascript way to paint the widgets
+        ///////////////////////////
         var js = "javascript:fetchFromTree";
         //TODO lots more
-        MillerColumn.makeColNav(contextLocator, jsonTopic, contextLocator, language, js, app, aux,
-                    user.uName, userIP, sToken , function cmMC(err, rslt) {
+        MillerColumn.makeColNav(contextLocator, jsonTopic, contextLocator,
+              language, js, app, aux, user.uName, userIP, sToken , function cmMC(err, rslt) {
             console.log('MILLERCOLUMN '+JSON.stringify(rslt));
             console.log("BOO "+myResult);
             //TODO put rslt into result

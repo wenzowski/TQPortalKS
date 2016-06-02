@@ -37,30 +37,26 @@ ConversationModel =  module.exports = function(environment) {
     // API
     /////////////////////////////
     self.fillDatatable = function(start, count, userId, userIP, sToken, callback) {
-        console.log("BConversationModel.fillDatatable "+userId);
-        topicDriver.listInstanceTopics(Constants.CONVERSATION_MAP_TYPE, start, count, userId, userIP, sToken, function bmF(err, rslt) {
-            console.log("LISTConversations "+err+" | "+JSON.stringify(rslt));
-            return callback(err, rslt, 0, 0);
-        })
+      console.log("BConversationModel.fillDatatable "+userId);
+      topicDriver.listInstanceTopics(Constants.CONVERSATION_MAP_TYPE, start, count, userId, userIP, sToken, function bmF(err, rslt) {
+        console.log("LISTConversations "+err+" | "+JSON.stringify(rslt));
+        //TODO
+        return callback(err, rslt, 0, 0);
+      });
     };
 
     self.create = function(json, isPrivate, userId, userIP, sToken, callback) {
-        console.log("CONVERSATION_MODEL_NEW_POST "+JSON.stringify(json)+" | "+JSON.stringify(userId));
-        //BLOG_MODEL_NEW_POST {"locator":"","title":"My First Official Blog Post","body":"
-        //Yup","tag1":"","tag2":"","tag3":"","tag4":""} | "jackpark"
-        //locator, typeLocator, userId, label,
-        //details, language, largeImagePath, smallImagePath,
-        //    isPrivate, jsonPivots, userIP,sToken,
-        var pivots = CommonModel.jsonBallToPivots(json),
-            lang = json.language,
-            nodeType = json.nodetype;
-        if (!lang) { lang = "en";}
-        CommonModel.createConversationNode(nodeType, json.parentlocator, json.context,
-            userId, json.title, json.body, lang, json.url,
-            getLargeIcon(nodeType), getSmallIcon(nodeType), isPrivate, pivots,
-            userIP, sToken, function umC(err, rslt) {
-                return callback(err, rslt);
-            });
+      console.log("CONVERSATION_MODEL_NEW_POST "+JSON.stringify(json)+" | "+JSON.stringify(userId));
+      var pivots = CommonModel.jsonBallToPivots(json),
+          lang = json.language,
+          nodeType = json.nodetype;
+      if (!lang) { lang = "en";}
+      CommonModel.createConversationNode(nodeType, json.parentlocator, json.context,
+          userId, json.title, json.body, lang, json.url,
+          getLargeIcon(nodeType), getSmallIcon(nodeType), isPrivate, pivots,
+          userIP, sToken, function umC(err, rslt) {
+        return callback(err, rslt);
+      });
     };
 
     self.update = function(json, userId, userIP, sToken, callback) {

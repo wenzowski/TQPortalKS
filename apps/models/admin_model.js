@@ -17,9 +17,9 @@ var AdminModel =  module.exports = function(environment) {
     ///////////////////////////
 
     self.logout = function(sessionToken, callback) {
-        userDriver.logout(sessionToken, function aLO(err, rslt) {
-            return callback(err, rslt);
-        });
+      userDriver.logout(sessionToken, function aLO(err, rslt) {
+          return callback(err, rslt);
+      });
     };
     /**
      * <p>Login the user represented in <code>request</code></p>
@@ -28,13 +28,13 @@ var AdminModel =  module.exports = function(environment) {
      * @param callback signature(err, result)
      */
     self.login = function(request, callback) {
-        var email = request.body.email,
-            password = request.body.password;
-        //console.log("AUTH "+email+" "+password);
-        userDriver.login(email, password, function aML(err, rslt) {
-            console.log("AdminModelLogin "+JSON.stringify(rslt));
-            return callback(err, rslt);
-        });
+      var email = request.body.email,
+          password = request.body.password;
+      //console.log("AUTH "+email+" "+password);
+      userDriver.login(email, password, function aML(err, rslt) {
+          console.log("AdminModelLogin "+JSON.stringify(rslt));
+          return callback(err, rslt);
+      });
     };
 
     ///////////////////////////
@@ -48,10 +48,10 @@ var AdminModel =  module.exports = function(environment) {
      * @returns {*}
      */
     self.hasInvitation = function(email, callback) {
-        userDriver.existsInvite(email, function addInv(err, rslt) {
-            console.log("AdminModel.hasInvitation "+err+" "+JSON.stringify(rslt));
-            return callback(err, rslt);
-        });
+      userDriver.existsInvite(email, function addInv(err, rslt) {
+          console.log("AdminModel.hasInvitation "+err+" "+JSON.stringify(rslt));
+          return callback(err, rslt);
+      });
     };
 
     /**
@@ -60,9 +60,9 @@ var AdminModel =  module.exports = function(environment) {
      * @param callback signature (err)
      */
     self.removeInvitation = function(email, callback) {
-        userDriver.removeInvite(email, function addInv(err) {
-            return callback(err);
-        });
+      userDriver.removeInvite(email, function addInv(err) {
+          return callback(err);
+      });
     };
 
     /**
@@ -71,10 +71,10 @@ var AdminModel =  module.exports = function(environment) {
      * @param callback signature(err)
      */
     self.addInvitation = function(email, callback) {
-        console.log("AdminModel.addInvitation "+email);
-        userDriver.createInvite(email, function addInv(err) {
-            return callback(err);
-        });
+      console.log("AdminModel.addInvitation "+email);
+      userDriver.createInvite(email, function addInv(err) {
+          return callback(err);
+      });
     };
     ///////////////////////////
     // Accounts
@@ -87,15 +87,15 @@ var AdminModel =  module.exports = function(environment) {
      * @param callback signature (err, result)
      */
     self.handleUnique = function(handle, callback) {
-        userDriver.validateHandle(handle, function unique(err, truth) {
-            return callback(err, truth);
-        });
+      userDriver.validateHandle(handle, function unique(err, truth) {
+          return callback(err, truth);
+      });
     };
 
     self.existsEmail = function(email, callback) {
-        userDriver.existsEmail(email, function unique(err, truth) {
-            return callback(err, truth);
-        });
+      userDriver.existsEmail(email, function unique(err, truth) {
+          return callback(err, truth);
+      });
     };
 
     /**
@@ -104,62 +104,62 @@ var AdminModel =  module.exports = function(environment) {
      * @param callback signature (err, result)
      */
     self.createAccount = function(request, callback) {
-        var result;
-        var handle = request.body.handle,
-            email = request.body.email,
-            password = request.body.password,
-            fullname = request.body.fullname;
-        if (fullname === "") {
-            fullname = "no name given";
-        }
-        console.log("AdminModel.createAccount "+email+" | "+
-            fullname+" | "+
-            handle+" | "+
-            request.body.avatar+" | "+
-            request.body.homepage);
-        //validate handle -1
-        //Sanity checks
-        console.log("XXX "+email);
-        if (email === "") {
-            return callback("MissingEmail", result);
-        }
-        self.existsEmail(email, function mEE(err, truth) {
-            console.log("TRUTH "+truth);
+      var result;
+      var handle = request.body.handle,
+          email = request.body.email,
+          password = request.body.password,
+          fullname = request.body.fullname;
+      if (fullname === "") {
+          fullname = "no name given";
+      }
+      console.log("AdminModel.createAccount "+email+" | "+
+          fullname+" | "+
+          handle+" | "+
+          request.body.avatar+" | "+
+          request.body.homepage);
+      //validate handle -1
+      //Sanity checks
+      console.log("XXX "+email);
+      if (email === "") {
+          return callback("MissingEmail", result);
+      }
+      self.existsEmail(email, function mEE(err, truth) {
+        console.log("TRUTH "+truth);
 
-            if (!truth) {
-                if (handle === "") {
-                    return callback("HandleRequired", result);
-                }
-                if (password === "") {
-                    return callback("MissingPassword", result)
-                }
-                if (handle.indexOf(" ") > -1) {
-                    console.log("BAD HANDLE " + handle);
-                    return callback("BadHandle", result);
-                }
-                self.handleUnique(handle, function (err, truth) {
-                    console.log("SIGNUP-VALIDATE " + JSON.stringify(truth));
-                    //SIGNUP VALIDATE {"rMsg":"not found","rToken":""}
-                    var msg = truth.rMsg;
-                    console.log("SS " + msg);
-                    if (msg === "ok") {
-                        return callback("HandleExists", result);
-                    }
-                    //otherwise continue
-                    var avatar = request.body.avatar,
-                        homepage = request.body.homepage,
-                        latitude = request.body.Latitude,
-                        longitude = request.body.Longitude;
-                    console.log("SS2");
-                    userDriver.signup(email, fullname, handle, password, avatar, homepage,
-                        latitude, longitude, function adminMSignup(err, rslt) {
-                            return callback(err, rslt);
-                        });
-                });
-            } else {
-                return callback("EmailExists", result);
+        if (!truth) {
+            if (handle === "") {
+                return callback("HandleRequired", result);
             }
-        });
+            if (password === "") {
+                return callback("MissingPassword", result)
+            }
+            if (handle.indexOf(" ") > -1) {
+                console.log("BAD HANDLE " + handle);
+                return callback("BadHandle", result);
+            }
+            self.handleUnique(handle, function (err, truth) {
+                console.log("SIGNUP-VALIDATE " + JSON.stringify(truth));
+                //SIGNUP VALIDATE {"rMsg":"not found","rToken":""}
+                var msg = truth.rMsg;
+                console.log("SS " + msg);
+                if (msg === "ok") {
+                    return callback("HandleExists", result);
+                }
+                //otherwise continue
+                var avatar = request.body.avatar,
+                    homepage = request.body.homepage,
+                    latitude = request.body.Latitude,
+                    longitude = request.body.Longitude;
+                console.log("SS2");
+                userDriver.signup(email, fullname, handle, password, avatar, homepage,
+                    latitude, longitude, function adminMSignup(err, rslt) {
+                        return callback(err, rslt);
+                    });
+            });
+        } else {
+            return callback("EmailExists", result);
+        }
+      });
     };
 
     /**

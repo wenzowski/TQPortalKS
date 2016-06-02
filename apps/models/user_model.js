@@ -10,10 +10,11 @@ UserModel =  module.exports = function(environment) {
     console.log("User "+topicDriver);
 
     self.listUsers = function(start, count, callback) {
-        topicDriver.listUserTopics(start, count, Constants.SYSTEM_USER, "", "", function umLU(err, rslt) {
-            console.log("UserModel.listUsers "+err+" "+JSON.stringify(rslt));
-            return callback(err, rslt);
-        });
+      topicDriver.listUserTopics(start, count, Constants.SYSTEM_USER,
+          "", "", function umLU(err, rslt) {
+        console.log("UserModel.listUsers "+err+" "+JSON.stringify(rslt));
+        return callback(err, rslt);
+      });
 //////////////////////////
 // UserModel.listUsers undefined {"rMsg":"ok","rToken":"","cargo":[{"crDt":"2015-11-24T13:14:17-08:00",
 // "trCl":["TypeType","UserType"],"crtr":"SystemUser","lox":"sam","sIco":"/images/person_sm.png",
@@ -23,16 +24,16 @@ UserModel =  module.exports = function(environment) {
     };
 
     self.getUser = function(locator, callback) {
-        console.log("UserModel.getUser "+locator);
-        topicDriver.grabTopic(locator, Constants.SYSTEM_USER, "", "", function umGU(err, rslt) {
-            console.log("UserModel.getUser "+err+" "+JSON.stringify(rslt));
+      console.log("UserModel.getUser "+locator);
+      topicDriver.grabTopic(locator, Constants.SYSTEM_USER, "", "", function umGU(err, rslt) {
+        console.log("UserModel.getUser "+err+" "+JSON.stringify(rslt));
 //////////////////////////
 //UserModel.getUser undefined {"rMsg":"ok","rToken":"","cargo":{"crDt":"2015-11-24T13:14:17-08:00",
 // "trCl":["TypeType","UserType"],"crtr":"SystemUser","lox":"sam","sIco":"/images/person_sm.png",
 // "isPrv":false,"_ver":"1448399657644","lEdDt":"2015-11-24T13:14:17-08:00","details":[""],
 // "label":["Sam Slow"],"lIco":"/images/person.png","inOf":"UserType"}}
 //////////////////////////
-            return callback(err, rslt);
-        })
+        return callback(err, rslt);
+      });
     };
 };

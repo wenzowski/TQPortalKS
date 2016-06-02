@@ -18,8 +18,8 @@ exports.plugin = function(app, environment) {
     /////////////
 
     app.get("/tag", helpers.isPrivate, function(req, res) {
-        var start = parseInt(req.query.start),
-            count = parseInt(req.query.count);
+        var start = helpers.validateNumber(parseInt(req.query.start)),
+            count = helpers.validateCount(parseInt(req.query.count));
         if (!start) {
             start = 0;
         }

@@ -17,8 +17,28 @@ exports.plugin = function(app, environment) {
     /////////////
 
     app.get("/quest/:id", helpers.isPrivate, function(req, res) {
-      //TODO more
-
+      var q = req.params.id;
+      if (q) {
+          var userId = req.session[Constants.USER_ID],
+              userIP = "",
+              theUser = helpers.getUser(req),
+              sToken = req.session[Constants.SESSION_TOKEN],
+              canJoin = true;
+          CommonModel.fetchTopic(q, userId, userIP, sToken, function uFT(err, rslt) {
+              var data =  environment.getCoreUIData(req);
+              if (rslt.cargo) {
+                  data = CommonModel.populateTopic(rslt.cargo, theUser, data);
+              }
+              console.log("CANJOIN "+q+" "+canJoin);
+              return res.render("quest", data);
+          });
+      } else {
+          //That's not good!
+          //TODO  alert stuff
+          console.log("DANG "+q);
+          req.flash("error", "Cannot get "+q);
+          res.redirect("/");
+      }
     });
 
     app.get("/questnew", helpers.isLoggedIn, function (req, res) {
@@ -29,16 +49,28 @@ exports.plugin = function(app, environment) {
         return res.render("blogwikiform", data);
     });
 
+    var _questsupport = function (body, userId, userIP, sToken, callback) {
+        if (body.locator === "") {
+            QuestModel.create(body, userId, userIP, sToken, function (err, result) {
+                return callback(err, result);
+            });
+        } else {
+            QuestModel.update(body, userId, userIP, sToken, function (err, result) {
+                return callback(err, result);
+            });
+        }
+    };
+
     app.post("/quest/new", helpers.isLoggedIn, function (req, res) {
-        var body = req.body;
-            //usx = req.user;
-        console.log("QUeST_NEW_POST " + JSON.stringify(body));
-  //      _wikisupport(body, usx, function (err, result) {
-  //          console.log("WIKI_NEW_POST-1 " + err + " " + result);
-            //technically, this should return to "/" since Lucene is not ready to display
-            // the new post; you have to refresh the page in any case
-            return res.redirect("/rpg");
-  //      });
+      var body = req.body,
+          userId = helpers.getUserId(req),
+          userIP = "",
+          sToken = req.session[Constants.SESSION_TOKEN];
+      console.log("QUEST_NEW_POST " + JSON.stringify(body));
+      _questsupport(body, userId, userIP, sToken, function (err, result) {
+          console.log("QUEST_NEW_POST-1 " + err + " " + result);
+          return res.redirect("/rpg");
+      });
     });
 
 };

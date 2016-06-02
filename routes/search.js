@@ -31,8 +31,8 @@ exports.plugin = function(app, environment) {
 
     app.post("/search", helpers.isPrivate,function(req, res) {
         var q = req.params.id,
-            start = parseInt(req.query.start),
-            count = parseInt(req.query.count);
+            start = helpers.validateNumber(parseInt(req.query.start)),
+            count = helpers.validateCount(parseInt(req.query.count));
         if (!start) {
             start = 0;
         }

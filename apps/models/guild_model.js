@@ -14,11 +14,11 @@ GuildModel =  module.exports = function(environment) {
 
     self.fillDatatable = function(start, count, userId, userIP, sToken, callback) {
         console.log("GuildModel.fillDatatable "+userId);
-        topicDriver.listInstanceTopics(Constants.GUILD_TYPE, start, count, userId, userIP, sToken, function bmF(err, rslt) {
-            console.log("LISTGUILDS "+err+" | "+JSON.stringify(rslt));
-            return callback(err, rslt, 0, 0);
-        })
-
+        topicDriver.listInstanceTopics(Constants.GUILD_TYPE, start, count,
+            userId, userIP, sToken, function bmF(err, rslt) {
+          console.log("LISTGUILDS "+err+" | "+JSON.stringify(rslt));
+          return callback(err, rslt, 0, 0);
+        });
     };
 
     self.create = function(json, userId, userIP, sToken, callback) {
@@ -27,11 +27,10 @@ GuildModel =  module.exports = function(environment) {
             lang = json.language;
         if (!lang) { lang = "en";}
         CommonModel.createTopicInstance(null, Constants.GUILD_TYPE, userId,
-                json.title, json.body, lang,
-                Constants.GUILD, Constants.GUILD_SM, false, null, pivots,
-            userIP, sToken, function umC(err, rslt) {
-                return callback(err, rslt);
-            });
+              json.title, json.body, lang, Constants.GUILD, Constants.GUILD_SM,
+              false, null, pivots, userIP, sToken, function umC(err, rslt) {
+          return callback(err, rslt);
+        });
     };
 
     self.update = function(json, userId, userIP, sToken, callback) {

@@ -166,8 +166,6 @@ exports.plugin = function(app, environment) {
       console.log("GUILD_NEW_POST " + JSON.stringify(user));
       _guildsupport(body, user, userIP, sToken, function (err) {
           console.log("GUILD_NEW_POST-1 " + err);
-          //technically, this should return to "/" since Lucene is not ready to display
-          // the new post; you have to refresh the page in any case
           return res.redirect("/rpg");
       });
    });

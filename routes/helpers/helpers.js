@@ -81,6 +81,25 @@ Helpers = function (environment) {
               data.context = q; // we are talking about responding to this blog
           }
     };
+
+    self.validateNumber = function(number) {
+      if (!number || number === "Nan") {
+        return 0; // default
+      }
+      return number;
+    };
+
+    /////////////////////////
+    // TODO validateCount limits the number of hits to MAX_HIT_COUNT
+    // which will be problematic until pagination is wired
+    /////////////////////////
+    self.validateCount = function(number) {
+      if (!number || number === "Nan") {
+        return Constants.MAX_HIT_COUNT; // default
+      }
+      return number;
+    };
+
 };
 
 module.exports = Helpers;

@@ -1,6 +1,8 @@
 
 /**
  * Created by park on 5/22/2016.
+ * File is named aquest.js to put the menu item at the top
+ * It could, instead, be named rpg.js and that drops the menu item lower
  */
 var Constants = require("../apps/constants"),
     Help = require("./helpers/helpers"),
@@ -30,29 +32,31 @@ exports.plugin = function(app, environment) {
       //TODO more
       var data = environment.getCoreUIData(req),
           //Quest first
-          start = parseInt(req.query.qstart),
-          count = parseInt(req.query.qcount),
+          start = helpers.validateNumber(parseInt(req.query.qstart)),
+          count = helpers.validateCount(parseInt(req.query.qcount)),
           userId = helpers.getUserId(req),
           userIP = "",
           sToken = null,
+          cursor,
           usx = helpers.getUser(req),
           credentials = usx.uRole;
+
       QuestModel.fillDatatable(start, count, userId, userIP, sToken, function questFill(err, qdata, countsent, totalavailable) {
           console.log("Quest.index " + qdata);
-          var cursor = start + countsent;
+          cursor = start + countsent;
           //pagination is based on start and count
           //both values are maintained in an html div
           data.qstart = cursor;
           data.qcount = Constants.MAX_HIT_COUNT; //pagination size
           data.qtotal = totalavailable;
-          data.qcargo = data.cargo;
+          data.qcargo = qdata.cargo;
           //now guild
-          start = parseInt(req.query.gstart);
-          count = parseInt(req.query.gcount);
+          start = helpers.validateNumber(parseInt(req.query.gstart));
+          count = helpers.validateCount(parseInt(req.query.gcount));
 
           GuildModel.fillDatatable(start, count, userId, userIP, sToken, function guildFill(err, gdata, countsent, totalavailable) {
               console.log("Guild.index " + gdata);
-              var cursor = start + countsent;
+              cursor = start + countsent;
               //pagination is based on start and count
               //both values are maintained in an html div
               data.gstart = cursor;
