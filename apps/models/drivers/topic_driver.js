@@ -170,7 +170,9 @@ TopicDriver =  module.exports = function(environment) {
             query = queryUtil.getCoreQuery(verb, userId, userIP, sToken);
         query.cargo = jsonTopic;
         console.log("SubmitNewSubclassTopic+ "+JSON.stringify(query));
-        //TODO
+        httpClient.post(urx, query, function tdSNIT(err, rslt) {
+            return callback(err, rslt);
+        });
     };
 
     /**
@@ -185,9 +187,11 @@ TopicDriver =  module.exports = function(environment) {
         var urx = '/tm/',
             verb = Constants.NEW_CONVERSATION_NODE,
             query = queryUtil.getCoreQuery(verb, userId, userIP, sToken);
-        query.cargo = jsonTopic;
+        query.cargo = jsonCargo;
         console.log("NewConversationNode+ "+JSON.stringify(query));
-        //TODO
+        httpClient.post(urx, query, function tdSNIT(err, rslt) {
+            return callback(err, rslt);
+        });
     };
 
     ///////////////////////////////////////////////

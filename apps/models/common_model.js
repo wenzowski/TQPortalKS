@@ -435,12 +435,10 @@ CommonModel =  module.exports = function(environment) {
           jsonT.url = url;
         }
         if (parentLocator !== null && parentLocator !== "") {
-            var extras = {};
-            var kid = childStruct(contextLocator, parentLocator);
-            extras.AddChildNode = kid;
-            jsonT.extras = extras;
+          jsonT.ContextLocator = contextLocator;
+          jsonT.ConParentLocator = parentLocator;
         }
-        topicDriver.submitNewInstanceTopic(jsonT, userId, userIP, sToken, function cmCT(err, rslt) {
+        topicDriver.submitNewConversationNode(jsonT, userId, userIP, sToken, function cmCT(err, rslt) {
             var x = rslt.cargo;
             var lox = x.lox;
             //deal with pivots
@@ -451,8 +449,8 @@ CommonModel =  module.exports = function(environment) {
             });
 
         });
-
     };
+    
     /**
      * Populate UI data for the topic.hbs template
      * @param jsonTopic

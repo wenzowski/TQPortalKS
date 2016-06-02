@@ -22,6 +22,7 @@ module.exports.PUT_TOPIC =              "PutTopic"; //topicmap
 module.exports.REMOVE_TOPIC =           "RemTopic"; //topicmap
 module.exports.NEW_INSTANCE_TOPIC =     "NewInstance"; //topicmap
 module.exports.NEW_SUBCLASS_TOPIC =     "NewSub"; //topicmap
+module.exports.NEW_CONVERSATION_NODE	= "NewConvNode"; // topicmap
 module.exports.NEW_USER =               "NewUser"; //userapp
 module.exports.LIST_INSTANCE_TOPICS =   "ListInstances"; //topicmap
 module.exports.LIST_USERS =             "ListUsers"; //topicmap & userapp
