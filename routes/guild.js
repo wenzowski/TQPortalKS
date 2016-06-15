@@ -9,8 +9,21 @@
  *      Guild is private -- invite only
  *      Not authenticated OR isMember
  */
+ ///////////////////////
+ // TODO
+ //   Representing a Roster for a guild
+ //   Displaying a Roster on the Guild page
+ //   JOINING a Quest
+ //   Displaying a Quest on the Guild page
+ //   PLAYING a Quest -- guild controls
+ //   LEAVING a Quest
+ //   LATER
+ //     Playing > 1 quest at a time
+ //////////////////////
 var Constants = require("../apps/constants"),
     Help = require("./helpers/helpers");
+const LEADER = "_L",
+      OWNER_LEADER = "_OL";
 
 exports.plugin = function(app, environment) {
     var CommonModel = environment.getCommonModel(),
@@ -25,7 +38,7 @@ exports.plugin = function(app, environment) {
      * is a member of a guild identified by <code>guildId</code>
      * @param guildId
      * @param user
-     * @return
+     * @return boolean
      */
     function userIsMember(guildId, user) {
       var credentials = user.uRole,
@@ -34,15 +47,22 @@ exports.plugin = function(app, environment) {
       return (where > -1);
     };
 
+    /**
+     * add a member (possibly the owner) to a guild
+     * @param guildId
+     * @param user
+     * @param callback
+     */
     function addMemberToGuild(guildId, user, callback) {
       console.log("ADDMEMBER "+guildId+" "+JSON.stringify(user));
       var credentials = user.uRole;
+          gid = guildId;
       if (Array.isArray(credentials)) {
-        credentials.push(guildId);
+        credentials.push(gid);
       } else {
         var c = [];
         c.push(credentials);
-        c.push(guildId);
+        c.push(gid);
         credentials = c;
       }
       user.uRole = credentials; //TODO set back in session?
@@ -52,9 +72,40 @@ exports.plugin = function(app, environment) {
       });
     };
 
+    function addLeaderToGuild(guildId, user, isOwner, callback) {
+      console.log("ADDLEADER "+guildId+" "+JSON.stringify(user));
+      var credentials = user.uRole,
+          gid = guildId;
+      if (isOwner) {
+        gid = gid+OWNER_LEADER;
+      } else {
+        gid = gid+LEADER;
+      }
+      if (Array.isArray(credentials)) {
+        credentials.push(gid);
+      } else {
+        var c = [];
+        c.push(credentials);
+        c.push(gid);
+        credentials = c;
+      }
+      user.uRole = credentials; //TODO set back in session?
+      AdminModel.addUserRole(user.uName, guildId, function gA(err, rslt) {
+        console.log("ADDEDLEADER "+err);
+        return callback(err);
+      });
+    };
+
+    function removeLeaderFromGuild(guildId, user, callback) {
+      //TODO you cannot remove the owner
+    };
+
     function removeMemberFromGuild(guildId, user, callback) {
       console.log("REMOVEMEMBER "+guildId+" "+JSON.stringify(user));
       var credentials = user.uRole;
+      ///////////////////////
+      // TODO this code is wrong
+      ///////////////////////
       if (Array.isArray(credentials)) {
         credentials.push(guildId);
       } else {
@@ -63,12 +114,26 @@ exports.plugin = function(app, environment) {
         c.push(guildId);
         credentials = c;
       }
+      //////////////////////
+      // TODO you cannot remove the owner
+      //////////////////////
       user.uRole = credentials; //TODO set back in session?
       AdminModel.removeUserRole(user.uName, guildId, function gA(err, rslt) {
         console.log("REMOVEDMEMBER "+err);
         return callback(err);
       });
     };
+
+
+    function userIsLeader(guildId, user, callback) {
+      var credentials = user.uRole,
+          where = credentials.indexOf(guildId+LEADER);
+      if (where === -1) {
+        where = credentials.indexOf(guildId+OWNER_LEADER);
+      }
+      console.log("LEADER? "+guildId+" "+credentials);
+      return (where > -1);
+    }
     // a Guild does not show on the Menu
     /////////////
     // Routes
@@ -87,10 +152,14 @@ exports.plugin = function(app, environment) {
               if (rslt.cargo) {
                   data = CommonModel.populateTopic(rslt.cargo, theUser, data);
                   if (environment.getIsAuthenticated()) {
-                    if (userIsMember(q, theUser)) {
+                    var isLeader = userIsLeader(q, theUser);
+                    if (isLeader) {
                       canJoin = false;
                       data.isGuildMember = true;
-
+                      data.isGuildLeader = true;
+                    } else if (userIsMember(q, theUser)) {
+                      canJoin = false;
+                      data.isGuildMember = true;
                     }
                   } else {
                     //not authenticated
@@ -130,9 +199,11 @@ exports.plugin = function(app, environment) {
         res.redirect("/");
       }
     });
-    app.get("/leaveguild/:id", helpers.isPrivate, function(req, res) {
 
+    app.get("/leaveguild/:id", helpers.isPrivate, function(req, res) {
+      //TODO
     });
+
     app.get("/guildnew", helpers.isLoggedIn, function (req, res) {
         var data = environment.getCoreUIData(req);
         data.formtitle = "New Guild";
@@ -147,7 +218,7 @@ exports.plugin = function(app, environment) {
               //creator of a guild is a member
               console.log("GCCC "+JSON.stringify(result));
               var gld = result;
-              addMemberToGuild(gld.lox, user, function gnu(err) {
+              addLeaderToGuild(gld.lox, user, true, function gnu(err) {
                 return callback(err);
               });
             });

@@ -2,6 +2,9 @@
   <ul class="nav nav-tabs">
       <li class="active"><a data-toggle="tab" href="#meta">MetaRoom</a></li>
       <li><a data-toggle="tab" href="#tree">GameTree</a></li>
+      {{#if isGuildLeader}}
+        <li><a data-toggle="tab" href="#leader">Leader</a></li>
+      {{/if}}
   </ul>
 
   <div class="tab-content">
@@ -10,6 +13,9 @@
       </div>
       <div id="tree" class="tab-pane fade">
         <h2>Game Tree Goes Here</code>
+      </div>
+      <div id="leader" class="tab-pane fade">
+        <h2>Leader Stuff Goes Here</code>
       </div>
   </div>
 

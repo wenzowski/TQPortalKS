@@ -1,5 +1,12 @@
 /**
  * Created by park on 5/28/2016.
+ * TODO
+ *    Guild creator is Member, Leader
+ *    Other guild members can be a Leader
+ *      HOW to represent that?
+ *    NEED
+ *     DID isGuildLeader()
+ *      SEE /routes/guild.js
  */
 var Constants = require("../constants"),
     GuildModel;
@@ -48,6 +55,7 @@ GuildModel =  module.exports = function(environment) {
     //     but that means we are putting more stuff on the backs of the topics.
     //  WILL consider an RDBMS solution for guilds
     // FOR NOW THESE ARE NOT USED
+    // SEE NOTES and code in /routes/guild.js
     ////////////////////////////////////
     /**
      * User joins a guild
@@ -74,6 +82,20 @@ GuildModel =  module.exports = function(environment) {
      */
     self.leaveGuild = function(guildId, userId, userIP, sToken, callback) {
       console.log("LEAVEGUILD "+guildId+" "+userId);
+      var err;
+      //TODO
+      return callback(err);
+    };
+
+    self.addLeader = function(guildId, userId, userIp, sToken, callback) {
+      console.log("ADDLEADER "+guildId+" "+userId);
+      var err;
+      //TODO
+      return callback(err);
+    };
+
+    self.removeLeader = function(guildId, userId, userIp, sToken, callback) {
+      console.log("REMOVELEADER "+guildId+" "+userId);
       var err;
       //TODO
       return callback(err);
