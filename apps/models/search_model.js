@@ -2,7 +2,7 @@
  * Created by park on 11/27/2015.
  */
 var Constants = require("../constants"),
-     SearchModel;
+    SearchModel;
 
 SearchModel =  module.exports = function(environment) {
     var self = this,

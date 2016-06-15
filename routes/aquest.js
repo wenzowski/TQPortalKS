@@ -15,7 +15,7 @@ exports.plugin = function(app, environment) {
         GuildModel = environment.getGuildModel(),
         QuestModel = environment.getQuestModel();
 
-    console.log("Blog "+RpgModel);
+    console.log("RPG "+RpgModel);
 
     /////////////
     // Menu

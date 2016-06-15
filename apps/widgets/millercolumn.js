@@ -2,9 +2,10 @@
  * Created by park on 1/13/2016.
  */
 var Sb = require("../stringbuilder"),
-    Constants = require("../constants");
+    Constants = require("../constants"),
+    MillerColumn;
 
-var MillerColumn = module.exports = function(environment) {
+MillerColumn = module.exports = function(environment) {
     var self = this,
         topicDriver = environment.getTopicDriver(),
         buffer = new Sb(),
@@ -43,7 +44,8 @@ var MillerColumn = module.exports = function(environment) {
      * @param contextLocator
      * @param rootNodeLocator
      */
-    function __makeNodeHTML(node, language, javascript, app, aux, buf, contextLocator, rootNodeLocator) {
+    function __makeNodeHTML(node, language, javascript, app, aux, buf, contextLocator,
+              rootNodeLocator) {
         console.log("ColNavWidget.__makeNodeHTML "+JSON.stringify(node)+" "+buf);
         //TODO modify this to deal with JSON
         buf.append("<li id=\""+node.lox+"\"><a class=\"nodehref\" href=\"");
@@ -76,8 +78,9 @@ var MillerColumn = module.exports = function(environment) {
      * @param stop
      * @param callback signature (err,html)
      */
-    function __buildColNav(rootNodeLocator, rootNode, selectedNode, contextLocator, language, javascript, app,
-                                  aux, buf, userId, userIP, sToken, stop,  callback) {
+    function __buildColNav(rootNodeLocator, rootNode, selectedNode, contextLocator,
+                          language, javascript, app,
+                          aux, buf, userId, userIP, sToken, stop,  callback) {
         var error = "";
         console.log("ColNavWidget.__buildColNav "+rootNodeLocator+" "+rootNode);
         buf.append(__makeNodeHTML(rootNode, language, javascript, app, aux, buf, contextLocator, rootNodeLocator));
@@ -124,7 +127,6 @@ var MillerColumn = module.exports = function(environment) {
             loop();
         } else {
 //			console.log("ColNavWidget.__buildColNav-7 "+buf.toString());
-
             return callback(error, buf.toString());
         }
     };
@@ -150,15 +152,17 @@ var MillerColumn = module.exports = function(environment) {
      * @param sToken
      * @param callback signature (err,colnavhtml)
      */
-    self.makeColNav = function(rootNodeLocator, selectedNode, contextLocator, language, javascript, app, aux,
+    self.makeColNav = function(rootNodeLocator, selectedNode, contextLocator,
+                              language, javascript, app, aux,
                                userId, userIP, sToken , callback) {
         var buffer = new Sb(),
             error;
 //		console.log("ColNavWidget.makeColNav "+buffer);
         if (selectedNode.lox === rootNodeLocator) {
             console.log("ColNavWidget.makeColNav-1 "+rootNodeLocator+" | "+selectedNode);
-            __buildColNav(rootNodeLocator, selectedNode, selectedNode, contextLocator, language, javascript,
-                app, aux, buffer, userId, userIP, sToken, false, function widgetMBuildColNav(err, html) {
+            __buildColNav(rootNodeLocator, selectedNode, selectedNode, contextLocator,
+                language, javascript, app, aux, buffer, userId, userIP,
+                sToken, false, function widgetMBuildColNav(err, html) {
 //				console.log("ColNavWidget.makeColNav-1 "+html);
                 buffer.append("</li>");
                 return callback(err, buffer.toString());
@@ -167,8 +171,9 @@ var MillerColumn = module.exports = function(environment) {
             topicDriver.grabTopic(rootNodeLocator, userId, userIP, sToken, function widgetMGetNode1(err, node) {
                 console.log("ColNavWidget.makeColNav-2 "+rootNodeLocator+" | "+node+" | "+selectedNode);
                 if (node) {
-                    __buildColNav(rootNodeLocator, node.cargo, selectedNode, contextLocator, language, javascript,
-                        app, aux, buffer, userId, userIP, sToken, false, function widgetMBuildColNav1(err, html) {
+                    __buildColNav(rootNodeLocator, node.cargo, selectedNode,
+                        contextLocator, language, javascript, app, aux, buffer,
+                        userId, userIP, sToken, false, function widgetMBuildColNav1(err, html) {
                         //					console.log("ColNavWidget.makeColNav-2 "+html);
                         buffer.append("</li>");
                         return callback(err, buffer.toString());

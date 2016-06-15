@@ -58,7 +58,11 @@ Helpers = function (environment) {
     };
 
     self.getUserId = function(req) {
-      return self.getUser(req).uName;
+      var u = self.getUser(req);
+      if (u) {
+        return u.uName;
+      }
+      return null;
     };
 
     self.checkTranscludes = function(req, data) {
@@ -71,6 +75,11 @@ Helpers = function (environment) {
       }
     };
 
+    /**
+     * Populate <code>data</code> with context found in <code>req</code>
+     * @param req
+     * @param data
+     */
     self.checkContext = function(req, data) {
       var contextLocator = req.query.contextLocator,
           q = req.params.id;
